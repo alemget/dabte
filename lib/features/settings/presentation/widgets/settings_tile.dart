@@ -1,1 +1,1 @@
-export '../../../../ui/settings/widgets/settings_tile.dart';
+export 'settings_tile_impl.dart';

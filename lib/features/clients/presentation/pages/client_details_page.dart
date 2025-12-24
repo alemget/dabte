@@ -1,1 +1,1 @@
-export '../../../../ui/clients/client_details_page.dart';
+export 'client_details_page_impl.dart';

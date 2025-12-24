@@ -1,1 +1,1 @@
-export '../../ui/settings/backup/services/background_backup_service.dart';
+export '../../features/settings/presentation/pages/backup/services/background_backup_service.dart';

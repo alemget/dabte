@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../models/transaction.dart';
-import '../../../../services/notification_service.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/entities/debt_transaction.dart';
 
 class ClientRemindersSheet extends StatelessWidget {
   final List<DebtTransaction> transactions;

@@ -1,1 +1,1 @@
-export '../../../../ui/settings/language_settings_page.dart';
+export 'language_settings_page_impl.dart';

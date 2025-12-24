@@ -1,1 +1,1 @@
-export '../../../../ui/settings/widgets/section_title.dart';
+export 'section_title_impl.dart';

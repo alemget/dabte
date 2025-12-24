@@ -1,1 +1,1 @@
-export '../../../../ui/settings/currencies_page.dart';
+export 'currencies_page_impl.dart';

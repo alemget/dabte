@@ -1,1 +1,1 @@
-export '../../../../ui/settings/settings_page.dart';
+export 'settings_page_impl.dart';

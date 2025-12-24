@@ -1,1 +1,1 @@
-export '../../../../ui/settings/widgets/settings_divider.dart';
+export 'settings_divider_impl.dart';

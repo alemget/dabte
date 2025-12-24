@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../data/debt_database.dart';
-import '../../../../data/currency_data.dart';
-import '../../../../models/client.dart';
-import '../../../../models/transaction.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../core/data/currency_data.dart';
+import '../../../../core/data/debt_database.dart';
+import '../../../../core/l10n/app_localizations.dart';
+import '../../domain/entities/client.dart';
+import '../../domain/entities/debt_transaction.dart';
 
 class AddEditTransactionPage extends StatefulWidget {
   final Client? initialClient;

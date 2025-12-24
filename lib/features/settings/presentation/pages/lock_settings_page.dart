@@ -1,1 +1,1 @@
-export '../../../../ui/settings/lock_settings_page.dart';
+export 'lock_settings_page_impl.dart';

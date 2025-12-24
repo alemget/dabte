@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 
-import '../features/clients/presentation/pages/clients_page.dart';
-import '../features/settings/presentation/pages/settings_page.dart';
+import 'clients/clients_list/clients_page.dart';
+import 'settings/settings_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -14,10 +14,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final _pages = const [
-    ClientsPage(),
-    SettingsPage(),
-  ];
+  final _pages = const [ClientsPage(), SettingsPage()];
 
   @override
   Widget build(BuildContext context) {

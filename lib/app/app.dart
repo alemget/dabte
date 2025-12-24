@@ -5,9 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../l10n/app_localizations.dart';
 import '../providers/language_provider.dart';
-import '../features/app_shell/presentation/pages/lock_screen.dart';
-import '../features/app_shell/presentation/pages/main_screen.dart';
-import '../features/app_shell/presentation/pages/splash_screen.dart';
+import '../ui/lock_screen.dart';
+import '../ui/main_screen.dart';
+import '../ui/splash_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

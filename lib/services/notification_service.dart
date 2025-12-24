@@ -15,6 +15,10 @@ class NotificationService {
 
   NotificationService._internal();
 
+  static const String _channelId = 'debt_reminders';
+  static const String _channelName = 'تذكيرات الديون';
+  static const String _channelDescription = 'إشعارات تذكير بالديون المستحقة';
+
   final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
   bool _isInitialized = false;
@@ -94,11 +98,10 @@ class NotificationService {
   /// إنشاء قناة الإشعارات - التأكد منها قبل كل عملية جدولة
   Future<void> _createNotificationChannel() async {
     const channel = AndroidNotificationChannel(
-      'debt_reminders',
-      'تذكيرات الديون',
-      description: 'إشعارات تذكير بالديون المستحقة',
+      _channelId,
+      _channelName,
+      description: _channelDescription,
       importance: Importance.max,
-      playSound: true,
       enableVibration: true,
     );
 
@@ -124,12 +127,12 @@ class NotificationService {
     }
 
     const androidDetails = AndroidNotificationDetails(
-      'debt_reminders',
-      'تذكيرات الديون',
+      _channelId,
+      _channelName,
+      channelDescription: _channelDescription,
       importance: Importance.max,
       priority: Priority.high,
       icon: '@mipmap/launcher_icon',
-      category: AndroidNotificationCategory.reminder,
     );
 
     const details = NotificationDetails(android: androidDetails);
@@ -145,6 +148,51 @@ class NotificationService {
   /// طلب الأذونات
   Future<bool> requestPermissions() async {
     debugPrint('Requesting permissions...');
+
+    // Ensure the plugin is initialized so platform-specific APIs are available.
+    if (!_isInitialized) {
+      await initialize();
+    }
+
+    bool notificationsGranted = true;
+    bool exactAlarmGranted = true;
+
+    // iOS: request permissions via the plugin API.
+    if (Platform.isIOS) {
+      final iosPlugin = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >();
+      final bool? granted = await iosPlugin?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      notificationsGranted = granted ?? false;
+    }
+
+    // Android: request permissions via the plugin API (Android 13+) and
+    // request exact alarm permission (Android 12+) when needed.
+    if (Platform.isAndroid) {
+      final androidPlugin = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+
+      if (await _isAndroid13OrHigher()) {
+        final bool? granted = await androidPlugin?.requestNotificationsPermission();
+        notificationsGranted = granted ?? false;
+      }
+
+      if (await _needsExactAlarmPermission()) {
+        final bool canScheduleExact =
+            (await androidPlugin?.canScheduleExactNotifications()) ?? false;
+        if (!canScheduleExact) {
+          final bool? granted = await androidPlugin?.requestExactAlarmsPermission();
+          exactAlarmGranted = granted ?? false;
+        }
+      }
+    }
 
     // 1. Notification Permission (Android 13+)
     if (await _isAndroid13OrHigher()) {
@@ -173,7 +221,9 @@ class NotificationService {
       }
     }
 
-    return true; // نحاول دائماً الاستمرار
+    // If the user denies notifications, scheduled reminders won't work.
+    // Exact alarms may be optional (fallback to inexact scheduling) but we track it.
+    return notificationsGranted && (exactAlarmGranted || !await _needsExactAlarmPermission());
   }
 
   Future<bool> _isAndroid13OrHigher() async {
@@ -204,7 +254,10 @@ class NotificationService {
     await initialize();
 
     // 2. طلب الأذونات صراحة قبل الجدولة
-    await requestPermissions();
+    final permissionsOk = await requestPermissions();
+    if (!permissionsOk) {
+      throw Exception('Notification permission not granted');
+    }
 
     final notificationId =
         transaction.id ?? DateTime.now().millisecondsSinceEpoch % 100000;
@@ -233,37 +286,61 @@ class NotificationService {
     }
 
     final androidDetails = AndroidNotificationDetails(
-      'debt_reminders',
-      'تذكيرات الديون',
-      channelDescription: 'إشعارات تذكير بالديون المستحقة',
+      _channelId,
+      _channelName,
+      channelDescription: _channelDescription,
       importance: Importance.max,
       priority: Priority.high,
       icon: '@mipmap/launcher_icon',
-      category: AndroidNotificationCategory.reminder,
       styleInformation: BigTextStyleInformation(
         '${transaction.amount.toStringAsFixed(2)} ${transaction.currency} $typeText\n${transaction.details}',
       ),
     );
 
-    final notificationDetails = NotificationDetails(android: androidDetails);
+    const darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      interruptionLevel: InterruptionLevel.timeSensitive,
+    );
+
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+    );
+
+    final androidPlugin = Platform.isAndroid
+        ? _notificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
+        : null;
+
+    final canScheduleExact = Platform.isAndroid
+        ? (await androidPlugin?.canScheduleExactNotifications()) ?? false
+        : false;
 
     try {
       debugPrint(
         'Scheduling for ID: $notificationId at $tzScheduledTime (Local)',
       );
 
-      // المحاولة الأولى: جدولة دقيقة (Exact)
+      // Prefer exact scheduling when allowed; otherwise schedule inexact to avoid
+      // failing silently on Android 12+ without the exact alarm permission.
       await _notificationsPlugin.zonedSchedule(
         notificationId,
         'تذكير بدين 💰',
         '${transaction.amount.toStringAsFixed(2)} ${transaction.currency} $typeText',
         tzScheduledTime,
         notificationDetails,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: canScheduleExact
+            ? AndroidScheduleMode.exactAllowWhileIdle
+            : AndroidScheduleMode.inexactAllowWhileIdle,
         payload: 'transaction_id:${transaction.id}',
       );
 
-      debugPrint('Notification scheduled successfully (Exact).');
+      debugPrint(
+        'Notification scheduled successfully (${canScheduleExact ? 'Exact' : 'Inexact'}).',
+      );
     } catch (e) {
       debugPrint('Error scheduling exact notification: $e');
 

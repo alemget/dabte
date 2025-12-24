@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../models/transaction.dart';
-import '../../../../services/notification_service.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../models/transaction.dart';
+import '../../../services/notification_service.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ClientRemindersSheet extends StatelessWidget {
   final List<DebtTransaction> transactions;
@@ -194,6 +194,8 @@ class ClientRemindersSheet extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    return '${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    final hh = date.hour.toString().padLeft(2, '0');
+    final mm = date.minute.toString().padLeft(2, '0');
+    return '${date.year}/${date.month}/${date.day} $hh:$mm';
   }
 }

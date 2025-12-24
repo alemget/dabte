@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -406,7 +405,7 @@ class _BackupPageState extends State<BackupPage> {
               ),
               ElevatedButton.icon(
                 onPressed: () {
-                  String fileName = fileNameController.text.trim();
+                  String fileName = currentFileName.trim();
                   if (fileName.isEmpty) {
                     fileName = initialFileName;
                   }
@@ -432,48 +431,6 @@ class _BackupPageState extends State<BackupPage> {
         ),
       ),
     );
-  }
-
-  Future<void> _performLocalBackupWithPicker() async {
-    // طلب الأذونات للإصدارات القديمة
-    await _requestStoragePermission();
-
-    // اختيار المجلد
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    
-    if (selectedDirectory == null) return;
-
-    setState(() => _isProcessing = true);
-    
-    try {
-      final result = await LocalBackupService.instance.createBackup(selectedDirectory);
-      
-      if (result.success && result.filePath != null) {
-        _showBackupSuccessDialog(
-          result.metadata?.fileName ?? 'backup.db',
-          result.filePath!,
-        );
-        
-        setState(() => _localBackupPath = selectedDirectory);
-        await _saveSettings();
-        
-        // تحديث قائمة النسخ
-        setState(() {});
-      } else {
-        _showErrorDialog(
-          'فشل إنشاء النسخة الاحتياطية',
-          result.errorMessage ?? 'حدث خطأ غير متوقع',
-        );
-      }
-    } catch (e) {
-      print('خطأ في النسخ الاحتياطي: $e');
-      _showErrorDialog(
-        'حدث خطأ غير متوقع',
-        'حدث خطأ أثناء محاولة إنشاء النسخة الاحتياطية.\n\nالخطأ: ${e.toString()}',
-      );
-    } finally {
-      setState(() => _isProcessing = false);
-    }
   }
 
   void _showBackupSuccessDialog(String fileName, String filePath) {
@@ -591,51 +548,6 @@ class _BackupPageState extends State<BackupPage> {
     );
   }
 
-  Future<bool> _requestStoragePermission() async {
-    try {
-      if (Platform.isAndroid) {
-        final androidInfo = await DeviceInfoPlugin().androidInfo;
-        final sdkInt = androidInfo.version.sdkInt;
-        
-        // Android 11+ لا يحتاج أذونات لأننا نستخدم SAF
-        if (sdkInt >= 30) {
-          return true;
-        }
-        
-        // Android 10 وأقل يحتاج أذونات التخزين
-        final status = await Permission.storage.status;
-        
-        if (status.isGranted) {
-          return true;
-        }
-        
-        if (status.isDenied) {
-          final result = await Permission.storage.request();
-          if (result.isGranted) {
-            return true;
-          }
-        }
-        
-        if (status.isPermanentlyDenied) {
-          if (mounted) {
-            final shouldOpen = await _showPermissionDialog();
-            if (shouldOpen == true) {
-              await openAppSettings();
-            }
-          }
-          return false;
-        }
-        
-        return false;
-      }
-      
-      return true;
-    } catch (e) {
-      print('خطأ في طلب الأذونات: $e');
-      return true;
-    }
-  }
-
   Future<bool?> _showPermissionDialog() {
     return showDialog<bool>(
       context: context,
@@ -731,6 +643,16 @@ class _BackupPageState extends State<BackupPage> {
       final storageStatus = await Permission.storage.status;
       if (storageStatus.isGranted) {
         return true;
+      }
+
+      if (storageStatus.isPermanentlyDenied) {
+        if (mounted) {
+          final shouldOpen = await _showPermissionDialog();
+          if (shouldOpen == true) {
+            await openAppSettings();
+          }
+        }
+        return false;
       }
       
       final result = await Permission.storage.request();
@@ -1178,7 +1100,11 @@ class _BackupPageState extends State<BackupPage> {
       if (confirm != true) {
         // تنظيف الملف المؤقت
         if (finalFilePath.contains('restore_')) {
-          try { await file.delete(); } catch (e) {}
+          try {
+            await file.delete();
+          } catch (e) {
+            debugPrint(e.toString());
+          }
         }
         return;
       }
@@ -1195,7 +1121,9 @@ class _BackupPageState extends State<BackupPage> {
           if (await tempFile.exists()) {
             await tempFile.delete();
           }
-        } catch (e) {}
+        } catch (e) {
+          debugPrint(e.toString());
+        }
       }
 
       setState(() => _isProcessing = false);

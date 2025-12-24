@@ -32,8 +32,9 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
   double _onMe = 0;
 
   String _getLocalizedCurrencyName(String rawName) {
-    if (rawName == 'LOCAL' || rawName == 'local')
+    if (rawName == 'LOCAL' || rawName == 'local') {
       return AppLocalizations.of(context)!.local;
+    }
 
     final searchKey = CurrencyData.normalizeCode(rawName);
 
@@ -628,6 +629,11 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
           ),
           centerTitle: true,
           actions: [
+            IconButton(
+              icon: const Icon(Icons.edit_outlined, size: 20),
+              tooltip: l10n.editClient,
+              onPressed: _editClient,
+            ),
             ClientAppBarActions(
               hasPendingReminder: _hasPendingReminder,
               showConvertedValues: _showConvertedValues,
@@ -880,12 +886,9 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                               )
                               .map((entry) {
                                 final summary = entry.value;
-                                final rate = _currencyRates
-                                    .firstWhere(
-                                      (c) => c.code == summary.currencyCode,
-                                      orElse: () => _currencyRates.first,
-                                    )
-                                    .rate;
+                                final rate = _findRateForCurrency(
+                                  summary.currencyCode,
+                                );
                                 final convertedValue = summary.net * rate;
 
                                 return Container(
@@ -958,8 +961,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                                     ],
                                   ),
                                 );
-                              })
-                              .toList(),
+                              }),
                         ],
                       ),
                     ),
@@ -1217,8 +1219,9 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
 
   List<DebtTransaction> _applyFilters() {
     final list = _transactions.where((tx) {
-      if (_currencyFilter != 'الكل' && tx.currency != _currencyFilter)
+      if (_currencyFilter != 'الكل' && tx.currency != _currencyFilter) {
         return false;
+      }
       if (_typeFilter == 'له' && !tx.isForMe) return false;
       if (_typeFilter == 'عليه' && tx.isForMe) return false;
       return true;

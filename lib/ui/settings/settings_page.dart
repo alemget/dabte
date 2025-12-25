@@ -4,7 +4,7 @@ import '../../l10n/app_localizations.dart';
 
 import '../../providers/language_provider.dart';
 import 'about_app_page.dart';
-import 'backup/backup_page.dart';
+import 'package:dabdt/features/backup/presentation/pages/backup_page.dart';
 import 'currencies_page.dart';
 import 'language_settings_page.dart';
 import 'lock_settings_page.dart';

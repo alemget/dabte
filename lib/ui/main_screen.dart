@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 
 import 'clients/clients_list/clients_page.dart';
+import 'reports/reports_page.dart';
 import 'settings/settings_page.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final _pages = const [ClientsPage(), SettingsPage()];
+  final _pages = const [ClientsPage(), ReportsPage(), SettingsPage()];
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +32,10 @@ class _MainScreenState extends State<MainScreen> {
             BottomNavigationBarItem(
               icon: const Icon(Icons.people_alt_outlined),
               label: l10n.clients,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.bar_chart_outlined),
+              label: l10n.reports,
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.settings_outlined),

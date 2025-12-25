@@ -116,11 +116,53 @@ abstract class AppLocalizations {
   /// **'العملاء'**
   String get clients;
 
+  /// No description provided for @reports.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقارير'**
+  String get reports;
+
   /// No description provided for @settings.
   ///
   /// In ar, this message translates to:
   /// **'الإعدادات'**
   String get settings;
+
+  /// No description provided for @reportsOverview.
+  ///
+  /// In ar, this message translates to:
+  /// **'نظرة عامة'**
+  String get reportsOverview;
+
+  /// No description provided for @reportsByCurrency.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسب العملة'**
+  String get reportsByCurrency;
+
+  /// No description provided for @reportsTopClients.
+  ///
+  /// In ar, this message translates to:
+  /// **'أعلى العملاء'**
+  String get reportsTopClients;
+
+  /// No description provided for @reportsCurrencies.
+  ///
+  /// In ar, this message translates to:
+  /// **'العملات'**
+  String get reportsCurrencies;
+
+  /// No description provided for @reportsLastActivity.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر نشاط'**
+  String get reportsLastActivity;
+
+  /// No description provided for @reportsNoData.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد بيانات لعرضها بعد'**
+  String get reportsNoData;
 
   /// No description provided for @searchClients.
   ///

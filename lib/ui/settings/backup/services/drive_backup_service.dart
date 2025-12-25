@@ -1,11 +1,6 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path/path.dart' as path;
+export 'package:dabdt/features/backup/data/datasources/drive_backup_service.dart';
 
+/*
 /// خدمة النسخ الاحتياطي عبر Google Drive
 class DriveBackupService {
   static final DriveBackupService instance = DriveBackupService._internal();
@@ -32,6 +27,7 @@ class DriveBackupService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_emailKey);
   }
+ 
 
   /// حفظ البريد الإلكتروني
   Future<void> saveEmail(String email) async {
@@ -415,3 +411,5 @@ class DriveBackupInfo {
     return '${createdTime!.day}/${createdTime!.month}/${createdTime!.year}';
   }
 }
+
+ */

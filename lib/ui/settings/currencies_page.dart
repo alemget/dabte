@@ -628,6 +628,12 @@ class _CurrencyCard extends StatelessWidget {
     final isLocal = currency.isLocal;
     final l10n = AppLocalizations.of(context)!;
 
+    // Get currency data to check for icon
+    CurrencyOption? data;
+    try {
+      data = CurrencyData.all.firstWhere((c) => c.code == currency.code);
+    } catch (_) {}
+
     return InkWell(
       onTap: onEdit,
       onLongPress: onLongPress,
@@ -658,14 +664,20 @@ class _CurrencyCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isLocal
                     ? Colors.amber.withOpacity(0.1)
-                    : const Color(0xFFF59E0B).withOpacity(0.1),
+                    : (data?.icon != null
+                          ? Colors.amber.withOpacity(0.1)
+                          : const Color(0xFFF59E0B).withOpacity(0.1)),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                isLocal ? Icons.star : Icons.attach_money_rounded,
+                isLocal
+                    ? Icons.star
+                    : (data?.icon ?? Icons.attach_money_rounded),
                 color: isLocal
                     ? Colors.amber.shade700
-                    : const Color(0xFFF59E0B),
+                    : (data?.icon != null
+                          ? Colors.amber.shade700
+                          : const Color(0xFFF59E0B)),
                 size: 26,
               ),
             ),
@@ -866,7 +878,7 @@ class _CurrencySelectionDialogState extends State<_CurrencySelectionDialog> {
               Flexible(
                 child: filtered.isEmpty
                     ? Padding(
-                        padding: EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(20),
                         child: Text(l10n.noResults),
                       )
                     : ListView.separated(
@@ -877,10 +889,16 @@ class _CurrencySelectionDialogState extends State<_CurrencySelectionDialog> {
                         itemBuilder: (context, index) {
                           final item = filtered[index];
                           return ListTile(
-                            leading: Text(
-                              item.flag,
-                              style: const TextStyle(fontSize: 24),
-                            ),
+                            leading: item.icon != null
+                                ? Icon(
+                                    item.icon,
+                                    color: Colors.amber.shade700,
+                                    size: 28,
+                                  )
+                                : Text(
+                                    item.flag,
+                                    style: const TextStyle(fontSize: 24),
+                                  ),
                             title: Text(
                               item.getLocalizedName(context),
                               style: const TextStyle(

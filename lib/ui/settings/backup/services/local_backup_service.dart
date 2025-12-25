@@ -1,15 +1,6 @@
-import 'dart:io';
+export 'package:dabdt/features/backup/data/datasources/local_backup_service.dart';
 
-import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
-
-import '../../../../data/debt_database.dart';
-import '../../../../utils/encryption_helper.dart';
-import '../models/backup_metadata.dart';
-import 'backup_file_manager.dart';
-
+/*
 /// خدمة النسخ الاحتياطي المحلي المحسّنة
 /// تدعم جميع إصدارات Android وتوفر تجربة مستخدم أفضل
 class LocalBackupService {
@@ -18,7 +9,6 @@ class LocalBackupService {
 
   // مفتاح التطبيق الثابت للتشفير
   static const String _appSecretKey = 'DebtManager_2025_SecureKey_v1';
-
 
   final BackupFileManager _fileManager = BackupFileManager.instance;
 
@@ -543,3 +533,5 @@ class RestoreResult {
     this.clientsCount,
   });
 }
+
+ */

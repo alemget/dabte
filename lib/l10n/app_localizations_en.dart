@@ -18,7 +18,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clients => 'Clients';
 
   @override
+  String get reports => 'Reports';
+
+  @override
   String get settings => 'Settings';
+
+  @override
+  String get reportsOverview => 'Overview';
+
+  @override
+  String get reportsByCurrency => 'By Currency';
+
+  @override
+  String get reportsTopClients => 'Top Clients';
+
+  @override
+  String get reportsCurrencies => 'Currencies';
+
+  @override
+  String get reportsLastActivity => 'Last Activity';
+
+  @override
+  String get reportsNoData => 'No data to show yet';
 
   @override
   String get searchClients => 'Search for a client...';

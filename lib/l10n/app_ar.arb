@@ -6,7 +6,15 @@
   
   "home": "الرئيسية",
   "clients": "العملاء",
+  "reports": "التقارير",
   "settings": "الإعدادات",
+
+  "reportsOverview": "نظرة عامة",
+  "reportsByCurrency": "حسب العملة",
+  "reportsTopClients": "أعلى العملاء",
+  "reportsCurrencies": "العملات",
+  "reportsLastActivity": "آخر نشاط",
+  "reportsNoData": "لا توجد بيانات لعرضها بعد",
   
   "searchClients": "بحث عن عميل...",
   "noClients": "لا يوجد عملاء",

@@ -6,12 +6,14 @@ class CurrencyOption {
   final String code;
   final String flag;
   final double defaultRate;
+  final IconData? icon;
 
   const CurrencyOption({
     required this.name,
     required this.code,
     required this.flag,
     this.defaultRate = 1.0,
+    this.icon,
   });
 
   String getLocalizedName(BuildContext context) {
@@ -271,26 +273,30 @@ class CurrencyData {
     CurrencyOption(
       name: 'ذهب عيار 24',
       code: 'GOLD24',
-      flag: '�',
+      flag: '',
       defaultRate: 0,
+      icon: Icons.grid_goldenratio,
     ),
     CurrencyOption(
       name: 'ذهب عيار 22',
       code: 'GOLD22',
-      flag: '�',
+      flag: '',
       defaultRate: 0,
+      icon: Icons.view_module,
     ),
     CurrencyOption(
       name: 'ذهب عيار 21',
       code: 'GOLD21',
-      flag: '�',
+      flag: '',
       defaultRate: 0,
+      icon: Icons.view_comfy,
     ),
     CurrencyOption(
       name: 'ذهب عيار 18',
       code: 'GOLD18',
-      flag: '�',
+      flag: '',
       defaultRate: 0,
+      icon: Icons.view_compact,
     ),
   ];
 

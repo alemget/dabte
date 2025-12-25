@@ -1,6 +1,6 @@
 # هيكل مشروع Debt Max 📁
 
-## 📂 الهيكل الحالي (بعد التنظيف)
+## 📂 الهيكل الحالي
 
 ```
 lib/
@@ -39,19 +39,40 @@ lib/
     ├── splash_screen.dart
     │
     ├── clients/                    ← قسم العملاء
-    │   ├── clients_page.dart
-    │   ├── client_details_page.dart
-    │   ├── add_edit_client_page.dart
-    │   ├── add_edit_transaction_page.dart
-    │   ├── components/             ← مكونات (bottom sheets)
-    │   ├── widgets/                ← widgets قابلة للاستخدام
-    │   ├── utils/                  ← أدوات مساعدة
-    │   ├── add_edit_transaction/   ← 📦 widgets مستخرجة
+    │   ├── clients_list/
+    │   │   └── clients_page.dart
+    │   ├── client_details/
+    │   │   ├── client_details_page.dart
     │   │   ├── models/
-    │   │   └── widgets/
-    │   └── client_details/         ← 📦 widgets مستخرجة
-    │       ├── models/
-    │       └── widgets/
+    │   │   ├── widgets/
+    │   │   └── utils/
+    │   ├── add_edit_client/
+    │   ├── add_edit_transaction/
+    │   ├── components/
+    │   ├── widgets/
+    │   └── utils/
+    │
+    ├── reports/                    ← 📊 قسم التقارير (جديد)
+    │   ├── reports_page.dart       ← الصفحة الرئيسية
+    │   ├── models/                 ← نماذج البيانات
+    │   │   ├── models.dart
+    │   │   ├── report_summary.dart
+    │   │   ├── client_debt_info.dart
+    │   │   ├── transaction_stats.dart
+    │   │   └── currency_breakdown.dart
+    │   ├── services/               ← خدمات جلب البيانات
+    │   │   ├── services.dart
+    │   │   └── reports_service.dart
+    │   └── widgets/                ← الويدجتس
+    │       ├── widgets.dart
+    │       ├── stat_card.dart
+    │       ├── stat_tile.dart
+    │       ├── section_card.dart
+    │       ├── custom_progress_bar.dart
+    │       ├── summary_card.dart
+    │       ├── clients_overview_card.dart
+    │       ├── transactions_report_card.dart
+    │       └── currency_report_card.dart
     │
     └── settings/                   ← قسم الإعدادات
         ├── settings_page.dart
@@ -62,7 +83,7 @@ lib/
         ├── about_app_page.dart
         ├── notifications_settings_page.dart
         ├── widgets/
-        └── backup/                 ← النسخ الاحتياطي
+        └── backup/
             ├── backup_page.dart
             ├── services/
             ├── models/
@@ -75,7 +96,8 @@ lib/
 
 | المقياس | القيمة |
 |---------|--------|
-| إجمالي الملفات | 59 ملف .dart |
-| الحجم الإجمالي | ~550 KB |
+| إجمالي الملفات | ~75 ملف .dart |
+| الحجم الإجمالي | ~600 KB |
 
-*آخر تحديث: 24 ديسمبر 2024*
+*آخر تحديث: 25 ديسمبر 2024*
+

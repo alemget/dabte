@@ -18,7 +18,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get clients => 'العملاء';
 
   @override
+  String get reports => 'التقارير';
+
+  @override
   String get settings => 'الإعدادات';
+
+  @override
+  String get reportsOverview => 'نظرة عامة';
+
+  @override
+  String get reportsByCurrency => 'حسب العملة';
+
+  @override
+  String get reportsTopClients => 'أعلى العملاء';
+
+  @override
+  String get reportsCurrencies => 'العملات';
+
+  @override
+  String get reportsLastActivity => 'آخر نشاط';
+
+  @override
+  String get reportsNoData => 'لا توجد بيانات لعرضها بعد';
 
   @override
   String get searchClients => 'بحث عن عميل...';

@@ -6,7 +6,15 @@
   
   "home": "Home",
   "clients": "Clients",
+  "reports": "Reports",
   "settings": "Settings",
+
+  "reportsOverview": "Overview",
+  "reportsByCurrency": "By Currency",
+  "reportsTopClients": "Top Clients",
+  "reportsCurrencies": "Currencies",
+  "reportsLastActivity": "Last Activity",
+  "reportsNoData": "No data to show yet",
   
   "searchClients": "Search for a client...",
   "noClients": "No clients",

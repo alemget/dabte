@@ -1,57 +1,30 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+export 'package:dabdt/features/backup/data/managers/backup_file_manager.dart';
 
-import '../models/backup_metadata.dart';
+/*
+// قناة للتواصل مع Android native code
+static const MethodChannel _channel = MethodChannel('debtmax/backup');
 
-/// مدير ملفات النسخ الاحتياطي
-/// يتعامل مع حفظ وقراءة الملفات بطريقة متوافقة مع جميع إصدارات Android
-class BackupFileManager {
-  static final BackupFileManager instance = BackupFileManager._internal();
-  BackupFileManager._internal();
-
-  static const String _backupFolderName = 'DebtMaxBackups';
-  static const String _backupPrefix = 'backup_';
-  static const String _backupExtension = '.db';
-
-  // قناة للتواصل مع Android native code
-  static const MethodChannel _channel = MethodChannel('debtmax/backup');
-
-  /// الحصول على إصدار Android SDK
-  Future<int> getAndroidSdkVersion() async {
-    if (!Platform.isAndroid) return 0;
-    
-    try {
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      return androidInfo.version.sdkInt;
-    } catch (e) {
-      debugPrint('خطأ في الحصول على إصدار Android: $e');
-      return 28; // افتراضي
-    }
+/// الحصول على إصدار Android SDK
+Future<int> getAndroidSdkVersion() async {
+  if (!Platform.isAndroid) return 0;
+  
+  try {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    return androidInfo.version.sdkInt;
+  } catch (e) {
+    debugPrint('خطأ في الحصول على إصدار Android: $e');
+    return 28; // افتراضي
   }
+}
 
-  /// الحصول على مجلد النسخ الاحتياطي الافتراضي (داخل مجلد التطبيق)
-  Future<Directory> getBackupDirectory() async {
-    try {
-      if (Platform.isAndroid) {
-        final sdkVersion = await getAndroidSdkVersion();
-        
-        // Android 10+ (API 29+): استخدام مجلد التطبيق الخارجي
-        if (sdkVersion >= 29) {
-          final externalDir = await getExternalStorageDirectory();
-          if (externalDir != null) {
-            final backupDir = Directory(path.join(externalDir.path, _backupFolderName));
-            if (!await backupDir.exists()) {
-              await backupDir.create(recursive: true);
-            }
-            return backupDir;
-          }
-        }
-        
-        // Android 9 وأقل: يمكن استخدام التخزين الخارجي
+/// الحصول على مجلد النسخ الاحتياطي الافتراضي (داخل مجلد التطبيق)
+Future<Directory> getBackupDirectory() async {
+  try {
+    if (Platform.isAndroid) {
+      final sdkVersion = await getAndroidSdkVersion();
+      
+      // Android 10+ (API 29+): استخدام مجلد التطبيق الخارجي
+      if (sdkVersion >= 29) {
         final externalDir = await getExternalStorageDirectory();
         if (externalDir != null) {
           final backupDir = Directory(path.join(externalDir.path, _backupFolderName));
@@ -62,108 +35,16 @@ class BackupFileManager {
         }
       }
       
-      // Fallback: مجلد المستندات
-      final documentsDir = await getApplicationDocumentsDirectory();
-      final backupDir = Directory(path.join(documentsDir.path, _backupFolderName));
-      if (!await backupDir.exists()) {
-        await backupDir.create(recursive: true);
-      }
-      return backupDir;
-    } catch (e) {
-      debugPrint('خطأ في الحصول على مجلد النسخ: $e');
-      final documentsDir = await getApplicationDocumentsDirectory();
-      return Directory(path.join(documentsDir.path, _backupFolderName));
-    }
-  }
-
-  /// الحصول على مجلد Downloads للنسخ الاحتياطية (مرئي للمستخدم)
-  Future<Directory?> getDownloadsBackupDirectory() async {
-    try {
-      if (Platform.isAndroid) {
-        // مسار مجلد Downloads على Android
-        const downloadsPath = '/storage/emulated/0/Download';
-        final backupDir = Directory(path.join(downloadsPath, _backupFolderName));
-        
-        try {
-          if (!await backupDir.exists()) {
-            await backupDir.create(recursive: true);
-          }
-          return backupDir;
-        } catch (e) {
-          debugPrint('لا يمكن إنشاء مجلد في Downloads: $e');
-          // محاولة بديلة: استخدام مجلد Documents
-          final docsDir = await getExternalStorageDirectory();
-          if (docsDir != null) {
-            // الصعود للمسار الجذري والنزول لـ Download
-            final parts = docsDir.path.split('/');
-            final baseIndex = parts.indexOf('Android');
-            if (baseIndex > 0) {
-              final basePath = parts.sublist(0, baseIndex).join('/');
-              final altDownloadsDir = Directory(path.join(basePath, 'Download', _backupFolderName));
-              try {
-                if (!await altDownloadsDir.exists()) {
-                  await altDownloadsDir.create(recursive: true);
-                }
-                return altDownloadsDir;
-              } catch (e2) {
-                debugPrint('فشل البديل أيضاً: $e2');
-              }
-            }
-          }
-          return null;
+      // Android 9 وأقل: يمكن استخدام التخزين الخارجي
+      final externalDir = await getExternalStorageDirectory();
+      if (externalDir != null) {
+        final backupDir = Directory(path.join(externalDir.path, _backupFolderName));
+        if (!await backupDir.exists()) {
+          await backupDir.create(recursive: true);
         }
+        return backupDir;
       }
-      return null;
-    } catch (e) {
-      debugPrint('خطأ في الحصول على مجلد Downloads: $e');
-      return null;
     }
-  }
-
-  /// نسخ ملف نسخة احتياطية إلى مجلد Downloads
-  Future<String?> copyBackupToDownloads(String sourcePath) async {
-    try {
-      final sourceFile = File(sourcePath);
-      if (!await sourceFile.exists()) {
-        debugPrint('الملف المصدر غير موجود: $sourcePath');
-        return null;
-      }
-
-      final downloadsDir = await getDownloadsBackupDirectory();
-      if (downloadsDir == null) {
-        debugPrint('لا يمكن الوصول إلى مجلد Downloads');
-        return null;
-      }
-
-      final fileName = path.basename(sourcePath);
-      final destPath = path.join(downloadsDir.path, fileName);
-      
-      await sourceFile.copy(destPath);
-      debugPrint('تم نسخ الملف إلى: $destPath');
-      return destPath;
-    } catch (e) {
-      debugPrint('خطأ في نسخ الملف إلى Downloads: $e');
-      return null;
-    }
-  }
-
-  /// الحصول على مسار مجلد Downloads للنسخ الاحتياطية
-  Future<String> getDownloadsPath() async {
-    final dir = await getDownloadsBackupDirectory();
-    if (dir != null) {
-      return dir.path;
-    }
-    // Fallback
-    return '/storage/emulated/0/Download/$_backupFolderName';
-  }
-
-  /// إنشاء اسم ملف نسخة احتياطية جديدة
-  String generateBackupFileName() {
-    final now = DateTime.now();
-    return '$_backupPrefix'
-        '${now.year}'
-        '${now.month.toString().padLeft(2, '0')}'
-        '${now.day.toString().padLeft(2, '0')}_'
         '${now.hour.toString().padLeft(2, '0')}'
         '${now.minute.toString().padLeft(2, '0')}'
         '$_backupExtension';
@@ -362,3 +243,5 @@ class BackupFileManager {
     }
   }
 }
+
+ */

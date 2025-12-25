@@ -297,4 +297,19 @@ class DebtDatabase {
     
     return summaries;
   }
+
+  Future<List<Map<String, dynamic>>> getCurrencyTotals() async {
+    final db = await database;
+
+    return db.rawQuery('''
+      SELECT
+        currency,
+        SUM(CASE WHEN isForMe = 1 THEN amount ELSE 0 END) as forMe,
+        SUM(CASE WHEN isForMe = 0 THEN amount ELSE 0 END) as onMe,
+        MAX(date) as lastTransactionDate
+      FROM transactions
+      GROUP BY currency
+      ORDER BY currency
+    ''');
+  }
 }

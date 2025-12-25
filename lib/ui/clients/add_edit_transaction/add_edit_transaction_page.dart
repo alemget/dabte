@@ -495,13 +495,30 @@ class _TransactionDialogState extends State<_TransactionDialog> {
                                                 );
                                             return DropdownMenuItem(
                                               value: c.code,
-                                              child: Text(
-                                                data.getLocalizedName(context),
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: textColor,
-                                                ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  if (data.icon != null) ...[
+                                                    Icon(
+                                                      data.icon,
+                                                      size: 18,
+                                                      color:
+                                                          Colors.amber.shade700,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                  ],
+                                                  Text(
+                                                    data.getLocalizedName(
+                                                      context,
+                                                    ),
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: textColor,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             );
                                           }).toList(),

@@ -8,9 +8,11 @@ import '../providers/language_provider.dart';
 import '../ui/lock_screen.dart';
 import '../ui/main_screen.dart';
 import '../ui/splash_screen.dart';
+import '../ui/intro/intro_page.dart';
 
 class App extends StatelessWidget {
-  const App({super.key});
+  final bool seenIntro;
+  const App({super.key, this.seenIntro = true});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class App extends StatelessWidget {
             ),
             useMaterial3: true,
           ),
-          home: const AppLockWrapper(),
+          home: AppLockWrapper(seenIntro: seenIntro),
         );
       },
     );
@@ -42,7 +44,8 @@ class App extends StatelessWidget {
 }
 
 class AppLockWrapper extends StatefulWidget {
-  const AppLockWrapper({super.key});
+  final bool seenIntro;
+  const AppLockWrapper({super.key, required this.seenIntro});
 
   @override
   State<AppLockWrapper> createState() => _AppLockWrapperState();
@@ -96,6 +99,7 @@ class _AppLockWrapperState extends State<AppLockWrapper>
       setState(() {
         _lockEnabled = lockEnabled;
         _isLocked = lockEnabled;
+        // If we haven't seen intro, we shouldn't be locked yet, or doesn't matter as we redirect
         _isLoading = false;
       });
     }
@@ -119,6 +123,10 @@ class _AppLockWrapperState extends State<AppLockWrapper>
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const SplashScreen();
+    }
+
+    if (!widget.seenIntro) {
+      return const IntroPage();
     }
 
     if (_isLocked && _lockEnabled) {

@@ -8,6 +8,7 @@ import '../../../models/client.dart';
 import '../../../models/transaction.dart';
 import '../../../l10n/app_localizations.dart';
 import 'widgets/widgets.dart';
+import '../../widgets/currency_display_helper.dart';
 import 'models/currency_option.dart';
 
 class AddEditTransactionPage extends StatefulWidget {
@@ -498,15 +499,12 @@ class _TransactionDialogState extends State<_TransactionDialog> {
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  if (data.icon != null) ...[
-                                                    Icon(
-                                                      data.icon,
-                                                      size: 18,
-                                                      color:
-                                                          Colors.amber.shade700,
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                  ],
+                                                  CurrencyDisplayHelper.getIcon(
+                                                    c.code,
+                                                    size: 18,
+                                                    showGoldText: false,
+                                                  ),
+                                                  const SizedBox(width: 8),
                                                   Text(
                                                     data.getLocalizedName(
                                                       context,

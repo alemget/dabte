@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../data/currency_data.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/client.dart';
 import '../../../providers/client_provider.dart';
+import '../../widgets/money_amount.dart';
 
 class ClientCard extends StatelessWidget {
   final Client client;
@@ -141,6 +143,7 @@ class _DebtIndicators extends StatelessWidget {
         final label = isOwed
             ? AppLocalizations.of(context)!.forMe
             : AppLocalizations.of(context)!.owes;
+        final code = CurrencyData.normalizeCode(entry.key);
 
         return Padding(
           padding: const EdgeInsets.only(left: 6),
@@ -150,13 +153,26 @@ class _DebtIndicators extends StatelessWidget {
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Text(
-              '$label ${entry.value.abs().toStringAsFixed(0)} ${entry.key}',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$label ',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: color,
+                  ),
+                ),
+                MoneyAmount(
+                  amount: entry.value.abs(),
+                  currencyCode: code,
+                  fractionDigits: 0,
+                  color: color,
+                  showCode: true,
+                  showIcon: true,
+                ),
+              ],
             ),
           ),
         );

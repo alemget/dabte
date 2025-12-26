@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/debt_database.dart';
 import '../../data/currency_data.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/currency_display_helper.dart';
 
 class CurrenciesPage extends StatefulWidget {
   const CurrenciesPage({super.key});
@@ -249,139 +250,152 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
     final l10n = AppLocalizations.of(context)!;
 
     // دالة مساعدة لفتح حوار اختيار العملة
-    Future<void> selectCurrency() async {
+    Future<void> selectCurrency(StateSetter setStateDialog) async {
       final CurrencyOption? result = await showDialog<CurrencyOption>(
         context: context,
         builder: (context) => const _CurrencySelectionDialog(),
       );
 
       if (result != null) {
-        nameController.text = result.getLocalizedName(context);
-        selectedCode = result.code;
-        rateController.text = result.defaultRate.toString();
+        setStateDialog(() {
+          nameController.text = result.getLocalizedName(context);
+          selectedCode = result.code;
+          rateController.text = result.defaultRate.toString();
+        });
       }
     }
 
     final result = await showDialog<bool>(
       context: context,
       builder: (context) {
-        return Directionality(
-          textDirection: Directionality.of(context),
-          child: AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            title: Text(
-              l10n.addCurrency,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-            ),
-            content: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Currency Selection Button
-                  InkWell(
-                    onTap: selectCurrency,
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade400),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey.shade50,
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.currency_exchange,
-                            color: Colors.blueAccent,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              nameController.text.isEmpty
-                                  ? l10n.chooseCurrencyFromList
-                                  : nameController.text,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: nameController.text.isEmpty
-                                    ? Colors.grey.shade600
-                                    : Colors.black87,
-                                fontWeight: nameController.text.isEmpty
-                                    ? FontWeight.normal
-                                    : FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                        ],
-                      ),
-                    ),
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return Directionality(
+              textDirection: Directionality.of(context),
+              child: AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: Text(
+                  l10n.addCurrency,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
                   ),
-                  const SizedBox(height: 16),
-
-                  // Rate Input
-                  TextFormField(
-                    controller: rateController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: '${l10n.exchangeRate} (${l10n.localCurrency})',
-                      hintText: l10n.exchangeRateHint,
-                      border: OutlineInputBorder(
+                ),
+                content: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Currency Selection Button
+                      InkWell(
+                        onTap: () => selectCurrency(setStateDialog),
                         borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade400),
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.grey.shade50,
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.currency_exchange,
+                                color: Colors.blueAccent,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  nameController.text.isEmpty
+                                      ? l10n.chooseCurrencyFromList
+                                      : nameController.text,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: nameController.text.isEmpty
+                                        ? Colors.grey.shade600
+                                        : Colors.black87,
+                                    fontWeight: nameController.text.isEmpty
+                                        ? FontWeight.normal
+                                        : FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              const Icon(
+                                Icons.arrow_drop_down,
+                                color: Colors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      prefixIcon: const Icon(Icons.payments_outlined),
-                      suffixText: l10n.perUnit,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return l10n.enterExchangeRate;
+                      const SizedBox(height: 16),
+
+                      // Rate Input
+                      TextFormField(
+                        controller: rateController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        decoration: InputDecoration(
+                          labelText:
+                              '${l10n.exchangeRate} (${l10n.localCurrency})',
+                          hintText: l10n.exchangeRateHint,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          prefixIcon: const Icon(Icons.payments_outlined),
+                          suffixText: l10n.perUnit,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return l10n.enterExchangeRate;
+                          }
+                          final parsed = double.tryParse(value.trim());
+                          if (parsed == null || parsed <= 0) {
+                            return l10n.enterValidNumberGreaterThanZero;
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: Text(l10n.cancel),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (nameController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.selectCurrencyFirst)),
+                        );
+                        return;
                       }
-                      final parsed = double.tryParse(value.trim());
-                      if (parsed == null || parsed <= 0) {
-                        return l10n.enterValidNumberGreaterThanZero;
-                      }
-                      return null;
+                      if (!formKey.currentState!.validate()) return;
+                      Navigator.of(context).pop(true);
                     },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                    ),
+                    child: Text(l10n.addCurrency),
                   ),
                 ],
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (nameController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.selectCurrencyFirst)),
-                    );
-                    return;
-                  }
-                  if (!formKey.currentState!.validate()) return;
-                  Navigator.of(context).pop(true);
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 8,
-                  ),
-                ),
-                child: Text(l10n.addCurrency),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -395,7 +409,7 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
       setState(() {
         _currencies.add(
           _Currency(
-            name: selectedCode ?? nameController.text.trim(),
+            name: nameController.text.trim(),
             code: code,
             rate: rate,
             isActive: true,
@@ -669,17 +683,7 @@ class _CurrencyCard extends StatelessWidget {
                           : const Color(0xFFF59E0B).withOpacity(0.1)),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                isLocal
-                    ? Icons.star
-                    : (data?.icon ?? Icons.attach_money_rounded),
-                color: isLocal
-                    ? Colors.amber.shade700
-                    : (data?.icon != null
-                          ? Colors.amber.shade700
-                          : const Color(0xFFF59E0B)),
-                size: 26,
-              ),
+              child: CurrencyDisplayHelper.getIcon(currency.code, size: 26),
             ),
             const SizedBox(width: 14),
 
@@ -889,16 +893,11 @@ class _CurrencySelectionDialogState extends State<_CurrencySelectionDialog> {
                         itemBuilder: (context, index) {
                           final item = filtered[index];
                           return ListTile(
-                            leading: item.icon != null
-                                ? Icon(
-                                    item.icon,
-                                    color: Colors.amber.shade700,
-                                    size: 28,
-                                  )
-                                : Text(
-                                    item.flag,
-                                    style: const TextStyle(fontSize: 24),
-                                  ),
+                            leading: CurrencyDisplayHelper.getIcon(
+                              item.code,
+                              size: 24,
+                              fallbackEmoji: item.flag,
+                            ),
                             title: Text(
                               item.getLocalizedName(context),
                               style: const TextStyle(

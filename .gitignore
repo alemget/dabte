@@ -33,6 +33,11 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Android build outputs
+/android/build/
+/android/**/build/
+/android/**/reports/
+
 # Symbolication related
 app.*.symbols
 

@@ -1369,6 +1369,54 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تجربة'**
   String get test;
+
+  /// No description provided for @sendReminder.
+  ///
+  /// In ar, this message translates to:
+  /// **'إرسال تذكير'**
+  String get sendReminder;
+
+  /// No description provided for @sendTextReminder.
+  ///
+  /// In ar, this message translates to:
+  /// **'إرسال نص عبر واتساب'**
+  String get sendTextReminder;
+
+  /// No description provided for @sendViaWhatsApp.
+  ///
+  /// In ar, this message translates to:
+  /// **'إرسال رسالة تذكير للعميل'**
+  String get sendViaWhatsApp;
+
+  /// No description provided for @generateInvoice.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء فاتورة'**
+  String get generateInvoice;
+
+  /// No description provided for @shareInvoice.
+  ///
+  /// In ar, this message translates to:
+  /// **'مشاركة فاتورة مطالبة'**
+  String get shareInvoice;
+
+  /// No description provided for @pleaseAddPhoneNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'يرجى إضافة رقم جوال العميل أولاً'**
+  String get pleaseAddPhoneNumber;
+
+  /// No description provided for @whatsappNotInstalled.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعذر فتح واتساب'**
+  String get whatsappNotInstalled;
+
+  /// No description provided for @errorOccurred.
+  ///
+  /// In ar, this message translates to:
+  /// **'حدث خطأ'**
+  String get errorOccurred;
 }
 
 class _AppLocalizationsDelegate

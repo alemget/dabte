@@ -647,4 +647,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get test => 'تجربة';
+
+  @override
+  String get sendReminder => 'إرسال تذكير';
+
+  @override
+  String get sendTextReminder => 'إرسال نص عبر واتساب';
+
+  @override
+  String get sendViaWhatsApp => 'إرسال رسالة تذكير للعميل';
+
+  @override
+  String get generateInvoice => 'إنشاء فاتورة';
+
+  @override
+  String get shareInvoice => 'مشاركة فاتورة مطالبة';
+
+  @override
+  String get pleaseAddPhoneNumber => 'يرجى إضافة رقم جوال العميل أولاً';
+
+  @override
+  String get whatsappNotInstalled => 'تعذر فتح واتساب';
+
+  @override
+  String get errorOccurred => 'حدث خطأ';
 }

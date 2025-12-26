@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../../data/debt_database.dart';
 import '../../../models/client.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../services/contact_picker_service.dart';
 
 class AddEditClientPage extends StatefulWidget {
   final Client? client;
@@ -39,6 +40,23 @@ class _AddEditClientPageState extends State<AddEditClientPage> {
     _nameFocus.dispose();
     _phoneFocus.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickContact() async {
+    final contact = await ContactPickerService.instance.pickContact();
+    if (contact != null) {
+      setState(() {
+        // If name is empty and we got a name from contact, use it
+        if (_nameController.text.trim().isEmpty &&
+            contact['name']!.isNotEmpty) {
+          _nameController.text = contact['name']!;
+        }
+        // Set phone number
+        if (contact['phone']!.isNotEmpty) {
+          _phoneController.text = contact['phone']!;
+        }
+      });
+    }
   }
 
   Future<void> _handleSave() async {
@@ -231,6 +249,14 @@ class _AddEditClientPageState extends State<AddEditClientPage> {
                                     color: isDark
                                         ? Colors.grey[400]
                                         : Colors.grey[500],
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      Icons.contacts_outlined,
+                                      color: primaryColor,
+                                    ),
+                                    tooltip: 'اختيار من جهات الاتصال',
+                                    onPressed: _pickContact,
                                   ),
                                 ),
                                 textInputAction: TextInputAction.done,

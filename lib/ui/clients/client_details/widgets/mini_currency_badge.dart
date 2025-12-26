@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../data/currency_data.dart';
+import '../../../widgets/currency_display_helper.dart';
 
 /// شارة عملة صغيرة
 class MiniCurrencyBadge extends StatelessWidget {
@@ -10,17 +11,17 @@ class MiniCurrencyBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final normalized = currency.trim();
-    String emoji;
 
+    // Try to find currency data
+    CurrencyOption? currencyData;
     try {
-      final item = CurrencyData.all.firstWhere(
+      currencyData = CurrencyData.all.firstWhere(
         (c) =>
             c.code.toUpperCase() == normalized.toUpperCase() ||
             c.name == normalized,
       );
-      emoji = item.flag;
     } catch (_) {
-      emoji = '💰';
+      // Not found
     }
 
     return Container(
@@ -33,7 +34,12 @@ class MiniCurrencyBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 12)),
+          CurrencyDisplayHelper.getIcon(
+            currencyData?.code ?? normalized,
+            fallbackEmoji: currencyData?.flag ?? '💰',
+            size: 10,
+            showGoldText: false, // Too small
+          ),
           const SizedBox(width: 4),
           Text(
             normalized,

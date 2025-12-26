@@ -13,6 +13,7 @@ import '../add_edit_transaction/add_edit_transaction_page.dart';
 import '../add_edit_client/add_edit_client_page.dart';
 import '../components/client_app_bar_actions.dart';
 import '../components/client_reminders_sheet.dart';
+import '../../widgets/currency_display_helper.dart';
 import '../components/client_filter_sheet.dart';
 import '../../../l10n/app_localizations.dart';
 import 'models/models.dart';
@@ -665,9 +666,11 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text(
-                                          summary.emoji,
-                                          style: const TextStyle(fontSize: 12),
+                                        // استبدال النص البدائي بأيقونة لو وجدت (للذهب)
+                                        CurrencyDisplayHelper.getIcon(
+                                          summary.currencyCode,
+                                          fallbackEmoji: summary.emoji,
+                                          size: 14,
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
@@ -790,9 +793,10 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Text(
-                                        summary.emoji,
-                                        style: const TextStyle(fontSize: 16),
+                                      CurrencyDisplayHelper.getIcon(
+                                        summary.currencyCode,
+                                        fallbackEmoji: summary.emoji,
+                                        size: 16,
                                       ),
                                       const SizedBox(width: 8),
                                       Expanded(
@@ -1049,12 +1053,11 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                                               ],
                                             ),
                                           ),
-                                          Text(
-                                            dateText,
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              color: Colors.grey.shade500,
-                                            ),
+                                          // Action button for WhatsApp/Invoice
+                                          DebtActionButton(
+                                            transaction: tx,
+                                            client: widget.client,
+                                            onClientUpdated: _loadData,
                                           ),
                                         ],
                                       ),

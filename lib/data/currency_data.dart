@@ -273,30 +273,30 @@ class CurrencyData {
     CurrencyOption(
       name: 'ذهب عيار 24',
       code: 'GOLD24',
-      flag: '',
-      defaultRate: 0,
-      icon: Icons.grid_goldenratio,
+      flag: '🥇',
+      defaultRate: 250,
+      icon: Icons.storage, // Three stacked bars (Highest purity)
     ),
     CurrencyOption(
       name: 'ذهب عيار 22',
       code: 'GOLD22',
-      flag: '',
-      defaultRate: 0,
-      icon: Icons.view_module,
+      flag: '🥇',
+      defaultRate: 230,
+      icon: Icons.view_stream, // Two thick bars
     ),
     CurrencyOption(
       name: 'ذهب عيار 21',
       code: 'GOLD21',
-      flag: '',
-      defaultRate: 0,
-      icon: Icons.view_comfy,
+      flag: '🥇',
+      defaultRate: 220,
+      icon: Icons.video_label, // Premium stylized bar
     ),
     CurrencyOption(
       name: 'ذهب عيار 18',
       code: 'GOLD18',
-      flag: '',
-      defaultRate: 0,
-      icon: Icons.view_compact,
+      flag: '🥇',
+      defaultRate: 190,
+      icon: Icons.crop_16_9, // Simple flat bar
     ),
   ];
 

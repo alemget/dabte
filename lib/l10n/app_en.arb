@@ -234,5 +234,14 @@
   "testNotificationBody": "This is a test notification to verify the system",
   "testNotificationSent": "Test notification sent",
   "testNotificationFailed": "Failed to send notification: ",
-  "test": "Test"
+  "test": "Test",
+
+  "sendReminder": "Send Reminder",
+  "sendTextReminder": "Send via WhatsApp",
+  "sendViaWhatsApp": "Send reminder message to client",
+  "generateInvoice": "Generate Invoice",
+  "shareInvoice": "Share payment invoice",
+  "pleaseAddPhoneNumber": "Please add client phone number first",
+  "whatsappNotInstalled": "Could not open WhatsApp",
+  "errorOccurred": "An error occurred"
 }

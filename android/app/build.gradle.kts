@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.debtmax.app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     // Override to use a stable, installed NDK version required by some Flutter plugins
     ndkVersion = "27.0.12077973"
 

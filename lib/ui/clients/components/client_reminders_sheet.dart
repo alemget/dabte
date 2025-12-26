@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../data/currency_data.dart';
 import '../../../models/transaction.dart';
 import '../../../services/notification_service.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../widgets/money_amount.dart';
 
 class ClientRemindersSheet extends StatelessWidget {
   final List<DebtTransaction> transactions;
@@ -124,11 +126,16 @@ class ClientRemindersSheet extends StatelessWidget {
                               color: color,
                             ),
                           ),
-                          title: Text(
-                            '${tx.amount.toStringAsFixed(2)} ${tx.currency}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: color,
+                          title: MoneyAmount(
+                            amount: tx.amount,
+                            currencyCode: CurrencyData.normalizeCode(tx.currency),
+                            color: color,
+                            fractionDigits: 2,
+                            showIcon: true,
+                            showCode: true,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                           subtitle: Column(

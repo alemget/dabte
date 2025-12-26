@@ -649,4 +649,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get test => 'Test';
+
+  @override
+  String get sendReminder => 'Send Reminder';
+
+  @override
+  String get sendTextReminder => 'Send via WhatsApp';
+
+  @override
+  String get sendViaWhatsApp => 'Send reminder message to client';
+
+  @override
+  String get generateInvoice => 'Generate Invoice';
+
+  @override
+  String get shareInvoice => 'Share payment invoice';
+
+  @override
+  String get pleaseAddPhoneNumber => 'Please add client phone number first';
+
+  @override
+  String get whatsappNotInstalled => 'Could not open WhatsApp';
+
+  @override
+  String get errorOccurred => 'An error occurred';
 }

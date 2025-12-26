@@ -234,5 +234,14 @@
   "testNotificationBody": "هذا إشعار تجريبي للتأكد من عمل النظام",
   "testNotificationSent": "تم إرسال إشعار تجريبي",
   "testNotificationFailed": "فشل إرسال الإشعار: ",
-  "test": "تجربة"
+  "test": "تجربة",
+
+  "sendReminder": "إرسال تذكير",
+  "sendTextReminder": "إرسال نص عبر واتساب",
+  "sendViaWhatsApp": "إرسال رسالة تذكير للعميل",
+  "generateInvoice": "إنشاء فاتورة",
+  "shareInvoice": "مشاركة فاتورة مطالبة",
+  "pleaseAddPhoneNumber": "يرجى إضافة رقم جوال العميل أولاً",
+  "whatsappNotInstalled": "تعذر فتح واتساب",
+  "errorOccurred": "حدث خطأ"
 }

@@ -67,6 +67,11 @@ dependencies:
   workmanager: ^0.9.0
   timezone: ^0.10.0
   flutter_timezone: ^5.0.1
+  
+  # Contact Picker
+  flutter_native_contact_picker: ^0.0.11
+  google_fonts: ^6.3.2
+  flutter_animate: ^4.5.2
 
 dev_dependencies:
   flutter_test:

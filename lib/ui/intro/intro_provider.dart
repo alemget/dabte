@@ -12,6 +12,39 @@ class IntroProvider extends ChangeNotifier {
   int _currentPage = 0;
   int get currentPage => _currentPage;
 
+  // Swipe control
+  bool _verseReady = false;
+  bool get verseReady => _verseReady;
+
+  bool _nameReady = false;
+  bool get nameReady => _nameReady;
+
+  bool _currencyReady = false;
+  bool get currencyReady => _currencyReady;
+
+  // Can swipe depends on current page state
+  bool get canSwipe {
+    if (_currentPage == 0) return _verseReady;
+    if (_currentPage == 1) return _nameReady;
+    if (_currentPage == 2) return _currencyReady;
+    return false;
+  }
+
+  void setVerseReady(bool ready) {
+    _verseReady = ready;
+    notifyListeners();
+  }
+
+  void setNameReady(bool ready) {
+    _nameReady = ready;
+    notifyListeners();
+  }
+
+  void setCurrencyReady(bool ready) {
+    _currencyReady = ready;
+    notifyListeners();
+  }
+
   // Currency State
   List<AppCurrency> _availableCurrencies = [];
   List<AppCurrency> get availableCurrencies => _availableCurrencies;

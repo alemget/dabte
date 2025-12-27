@@ -48,9 +48,9 @@ class WhatsAppService {
     buffer.writeln('*مطالبة بسداد دين*');
     buffer.writeln('━━━━━━━━━━━━━━━━━━');
     buffer.writeln();
-    buffer.writeln('عزيزي/عزيزتي *$clientName*،');
+    buffer.writeln('عزيزي/ *$clientName*،');
     buffer.writeln();
-    buffer.writeln('نود تذكيركم بالمبلغ المستحق:');
+    buffer.writeln('نود تذكيركم بسداد الدين اللي عليكم:');
     buffer.writeln();
     buffer.writeln('💰 *المبلغ:* ${amount.toStringAsFixed(2)} $currency');
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/currency_display_helper.dart';
 import '../../../l10n/app_localizations.dart';
 import '../models/models.dart';
 
@@ -142,8 +143,10 @@ class SummaryCard extends StatelessWidget {
   }
 
   String _formatAmount(double amount) {
-    if (amount == amount.roundToDouble()) return amount.toInt().toString();
-    return amount.toStringAsFixed(2);
+    if (amount == amount.roundToDouble()) {
+      return CurrencyDisplayHelper.format(amount, fractionDigits: 0);
+    }
+    return CurrencyDisplayHelper.format(amount, fractionDigits: 2);
   }
 }
 

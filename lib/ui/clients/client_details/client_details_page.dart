@@ -674,7 +674,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
-                                          '${_getLocalizedCurrencyName(summary.currencyName)}: ${summary.net.toStringAsFixed(2)}',
+                                          '${_getLocalizedCurrencyName(summary.currencyName)}: ${CurrencyDisplayHelper.format(summary.net)}',
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontWeight: isSelected

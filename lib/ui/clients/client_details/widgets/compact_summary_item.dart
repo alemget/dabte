@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../widgets/currency_display_helper.dart';
 
 /// عنصر ملخص مدمج (له، عليه، الصافي)
 class CompactSummaryItem extends StatelessWidget {
@@ -27,7 +28,7 @@ class CompactSummaryItem extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          value.toStringAsFixed(0),
+          CurrencyDisplayHelper.format(value, fractionDigits: 0),
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,

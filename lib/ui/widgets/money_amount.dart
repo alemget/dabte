@@ -25,18 +25,20 @@ class MoneyAmount extends StatelessWidget {
   });
 
   String _format(double value) {
-    final fixed = value.toStringAsFixed(fractionDigits);
-    if (fractionDigits > 0 && fixed.endsWith('.' + '0' * fractionDigits)) {
-      return fixed.substring(0, fixed.length - (fractionDigits + 1));
-    }
-    return fixed;
+    return CurrencyDisplayHelper.format(value, fractionDigits: fractionDigits);
   }
 
   @override
   Widget build(BuildContext context) {
     final effectiveColor = color;
     final text = _format(amount);
-    final sign = showSign ? (amount > 0 ? '+' : amount < 0 ? '-' : '') : '';
+    final sign = showSign
+        ? (amount > 0
+              ? '+'
+              : amount < 0
+              ? '-'
+              : '')
+        : '';
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -50,17 +52,30 @@ class MoneyAmount extends StatelessWidget {
         ],
         Text(
           '$sign$text',
-          style: (style ?? const TextStyle(fontSize: 12, fontWeight: FontWeight.w700))
-              .copyWith(color: effectiveColor),
+          style:
+              (style ??
+                      const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ))
+                  .copyWith(color: effectiveColor),
         ),
         if (showCode) ...[
           const SizedBox(width: 6),
           Text(
             currencyCode,
-            style: (style ?? const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)).copyWith(
-              color: effectiveColor?.withAlpha(220) ?? Colors.grey.shade700,
-              fontWeight: FontWeight.w600,
-            ),
+            style:
+                (style ??
+                        const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ))
+                    .copyWith(
+                      color:
+                          effectiveColor?.withAlpha(220) ??
+                          Colors.grey.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
           ),
         ],
       ],

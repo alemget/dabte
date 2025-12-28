@@ -27,10 +27,10 @@ class _VerseIntroPageState extends State<VerseIntroPage> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF1a1a2e), Color(0xFF16213e)],
+        color: Color(0xFF1a1a2e), // Fallback color
+        image: DecorationImage(
+          image: AssetImage('assets/images/intro_background.png'),
+          fit: BoxFit.cover,
         ),
       ),
       child: SafeArea(

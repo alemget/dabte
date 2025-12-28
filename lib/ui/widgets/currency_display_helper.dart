@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../data/currency_data.dart';
-import 'gold_bar_icon.dart';
 
 /// Helper class to standardize currency icon display across the app
 class CurrencyDisplayHelper {
@@ -14,23 +13,15 @@ class CurrencyDisplayHelper {
     try {
       final normalized = CurrencyData.normalizeCode(code);
 
-      // Gold karats: use a dedicated gold bar icon (24/22/21/18)
-      if (normalized.startsWith('GOLD')) {
-        final karat = normalized.replaceAll('GOLD', '');
-        final width = size * 2.0;
-        final height = size * 1.0;
-        return GoldBarIcon(
-          karat: karat,
-          width: width,
-          height: height,
-          showText: showGoldText,
-        );
-      }
-
       // Check for standard currencies with Icons
       final currency = CurrencyData.all.firstWhere(
         (c) => c.code.toUpperCase() == normalized,
       );
+
+      // GOLD should look like other currencies (emoji/flag), not a special icon
+      if (normalized.startsWith('GOLD')) {
+        return Text(currency.flag, style: TextStyle(fontSize: size));
+      }
 
       if (currency.icon != null) {
         return Icon(currency.icon, size: size, color: Colors.amber.shade700);

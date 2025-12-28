@@ -31,66 +31,75 @@ class _VersePageState extends State<VersePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(IntroTheme.padding),
-      child: Column(
-        children: [
-          const Spacer(),
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFF1a1a2e),
+        image: DecorationImage(
+          image: AssetImage('assets/images/intro_background.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(IntroTheme.padding),
+        child: Column(
+          children: [
+            const Spacer(),
 
-          // ─────────────────────────────────────────────────────────
-          // Verse Card (Placeholder - سيتم تصميمها لاحقاً)
-          // ─────────────────────────────────────────────────────────
-          AnimatedOpacity(
-            opacity: _ready ? 1 : 0,
-            duration: const Duration(milliseconds: 500),
-            child: Container(
-              padding: const EdgeInsets.all(IntroTheme.cardPadding),
-              decoration: IntroTheme.cardDecoration,
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.menu_book_rounded,
-                    size: 56,
-                    color: IntroTheme.primary.withOpacity(0.8),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Verse text
-                  const Text(
-                    'يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا تَدَايَنتُم بِدَيْنٍ\nإِلَىٰ أَجَلٍ مُّسَمًّى فَاكْتُبُوهُ',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'Amiri',
-                      color: IntroTheme.textPrimary,
-                      height: 2,
+            // ─────────────────────────────────────────────────────────
+            // Verse Card (Placeholder - سيتم تصميمها لاحقاً)
+            // ─────────────────────────────────────────────────────────
+            AnimatedOpacity(
+              opacity: _ready ? 1 : 0,
+              duration: const Duration(milliseconds: 500),
+              child: Container(
+                padding: const EdgeInsets.all(IntroTheme.cardPadding),
+                decoration: IntroTheme.cardDecoration,
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.menu_book_rounded,
+                      size: 56,
+                      color: IntroTheme.primary.withOpacity(0.8),
                     ),
-                  ),
+                    const SizedBox(height: 24),
 
-                  const SizedBox(height: 16),
-
-                  // Surah reference
-                  Text(
-                    'سورة البقرة - ٢٨٢',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: IntroTheme.textSecondary,
+                    // Verse text
+                    const Text(
+                      'يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا تَدَايَنتُم بِدَيْنٍ\nإِلَىٰ أَجَلٍ مُّسَمًّى فَاكْتُبُوهُ',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Amiri',
+                        color: IntroTheme.textPrimary,
+                        height: 2,
+                      ),
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 16),
+
+                    // Surah reference
+                    Text(
+                      'سورة البقرة - ٢٨٢',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: IntroTheme.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          const Spacer(),
+            const Spacer(),
 
-          // ─────────────────────────────────────────────────────────
-          // Swipe Hint
-          // ─────────────────────────────────────────────────────────
-          SwipeHint(isVisible: _ready),
+            // ─────────────────────────────────────────────────────────
+            // Swipe Hint
+            // ─────────────────────────────────────────────────────────
+            SwipeHint(isVisible: _ready),
 
-          const SizedBox(height: 24),
-        ],
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }

@@ -35,31 +35,33 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     OnboardingPageData(
       title: 'مرحباً بك في\nديوماكس',
       description:
-          'رفيقك الذكي لإدارة حساباتك بكل سهولة واحترافية.\n'
-          'نظّم ديونك، تابع عملائك، واحصل على تقارير دقيقة.\n'
-          'ابدأ رحلتك نحو التحكم المالي الكامل.',
+          'هل يمكن للجمال أن يكون ذكياً؟ ديوماكس وُجد ليجيب. كل بكسل هنا مدروس، كل حركة لها معنى، وكل أداة وُضعت لتكون امتداداً طبيعياً ليدك وتفكيرك. تجربة غامضة بسلاستها، ومدهشة بذكائها. أنت لا تستخدم تطبيقاً.. أنت تعيش تجربة ديوماكس.',
       icon: Icons.rocket_launch,
       isWelcomePage: true,
     ),
     OnboardingPageData(
-      title: 'سهولة\nالاستخدام',
-      description: 'واجهة سهلة وبديهية تجعل تجربتك ممتعة وسلسة',
+      title: 'سهولة الاستخدام',
+      description:
+          'إبداع في البساطة وقوة في الأداء. واجهة ذكية صُممت خصيصاً لتتناغم مع حركتك، حيث كل عنصر ومسافة ولون خضع لدراسة دقيقة ليمنحك تجربة استخدام فائقة السلاسة والسرعة',
       icon: Icons.auto_awesome,
     ),
     OnboardingPageData(
-      title: 'الأمانة',
-      description: 'نحمي بياناتك بأعلى معايير الأمان والخصوصية',
+      title: 'الأمان والاحتياط',
+      description:
+          'خصوصية مطلقة وأمان متكامل. تُخزن بياناتك مشفرة محلياً على جهازك لضمان السرية، مع منظومة نسخ احتياطي ذكية (سحابية ومحلية) تمنحك الطمأنينة الكاملة والقدرة على استعادة معلوماتك في أي وقت',
       icon: Icons.shield_outlined,
     ),
     OnboardingPageData(
-      title: 'التكامل\nوالحيوية',
-      description: 'تجربة متكاملة وديناميكية لتلبية جميع احتياجاتك',
-      icon: Icons.bolt,
+      title: 'مجاني بالكامل',
+      description:
+          'قل وداعاً للاشتراكات الشهرية والإعلانات المزعجة التي تسرق تركيزك. استمتع بتجربة مجانية 100%، نظيفة، وكاملة المزايا. نعم، إنه ديوماكس يا صديقي!',
+      icon: Icons.card_giftcard,
     ),
     OnboardingPageData(
-      title: 'مجاني\nوآمن',
-      description: 'تطبيق مجاني بالكامل بدون أي رسوم خفية أو قيود',
-      icon: Icons.card_giftcard,
+      title: 'التكامل والمرونة',
+      description:
+          'صُمم ليدهشك! يتحدث لغتك، يدعم عملتك، وينبهك لكل صغيرة وكبيرة بذكاء فائق. تجربة متكاملة ستجعلك تتساءل: كيف كانت حياتي المالية قبله؟',
+      icon: Icons.bolt,
     ),
   ];
 
@@ -266,26 +268,72 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // عنوان الترحيب بتدرج ذهبي
-                    ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [
-                          Color(0xFFFFD700), // ذهبي
-                          Color(0xFFFF8C00), // برتقالي
-                          Color(0xFFFFD700), // ذهبي
-                        ],
-                      ).createShader(bounds),
-                      child: Text(
-                        data.title,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          height: 1.3,
-                          fontFamily: 'Cairo',
+                    // عنوان الترحيب المخصص
+                    Column(
+                      children: [
+                        // "مرحباً بك في" بخط صغير ولون مختلف
+                        Text(
+                          'مرحباً بك في',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white.withOpacity(0.8),
+                            height: 1.3,
+                            fontFamily: 'Cairo',
+                            letterSpacing: 1.5,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        // "ديون ماكس" بلونين احترافيين وخط كبير
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // "ديون" بلون أزرق/سماوي احترافي
+                            ShaderMask(
+                              shaderCallback: (bounds) => const LinearGradient(
+                                colors: [
+                                  Color(0xFF00D4FF), // أزرق سماوي فاتح
+                                  Color(0xFF0099CC), // أزرق سماوي
+                                ],
+                              ).createShader(bounds),
+                              child: const Text(
+                                'ديون',
+                                style: TextStyle(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  height: 1.1,
+                                  fontFamily: 'Cairo',
+                                  letterSpacing: -1,
+                                ),
+                              ),
+                            ),
+                            // "ماكس" بلون ذهبي/برتقالي احترافي
+                            ShaderMask(
+                              shaderCallback: (bounds) => const LinearGradient(
+                                colors: [
+                                  Color(0xFFFFD700), // ذهبي
+                                  Color(0xFFFF8C00), // برتقالي
+                                  Color(0xFFFF6347), // أحمر برتقالي
+                                ],
+                              ).createShader(bounds),
+                              child: const Text(
+                                'ماكس',
+                                style: TextStyle(
+                                  fontSize: 48,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  height: 1.1,
+                                  fontFamily: 'Cairo',
+                                  letterSpacing: -1,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
 

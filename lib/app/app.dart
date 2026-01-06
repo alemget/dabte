@@ -8,7 +8,7 @@ import '../providers/language_provider.dart';
 import '../ui/lock_screen.dart';
 import '../ui/main_screen.dart';
 import '../ui/splash_screen.dart';
-import '../ui/intro/intro_page.dart';
+import '../features/onboarding/onboarding.dart';
 
 class App extends StatelessWidget {
   final bool seenIntro;
@@ -20,7 +20,7 @@ class App extends StatelessWidget {
       builder: (context, languageProvider, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Debt Max - ديوني ماكس',
+          title: 'DioMax - ديوماكس',
           locale: languageProvider.locale,
           supportedLocales: const [Locale('ar'), Locale('en')],
           localizationsDelegates: const [
@@ -58,6 +58,7 @@ class _AppLockWrapperState extends State<AppLockWrapper>
   bool _isLoading = true;
   bool _isAuthenticating = false;
   bool _hasUnlocked = false; // Flag to prevent re-locking after unlock
+  bool _introCompleted = false;
 
   @override
   void initState() {
@@ -125,8 +126,21 @@ class _AppLockWrapperState extends State<AppLockWrapper>
       return const SplashScreen();
     }
 
-    if (!widget.seenIntro) {
-      return const IntroPage();
+    // TODO: مؤقتاً - إظهار شاشة الترحيب دائماً للتجربة
+    // بعد الانتهاء من التجربة، أعد تفعيل الشرط الأصلي:
+    // if (!widget.seenIntro) {
+    if (true) {
+      if (!_introCompleted) {
+        return OnboardingFlow(
+          onCompleted: () {
+            if (mounted) {
+              setState(() {
+                _introCompleted = true;
+              });
+            }
+          },
+        );
+      }
     }
 
     if (_isLocked && _lockEnabled) {

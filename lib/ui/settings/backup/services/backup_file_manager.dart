@@ -2,7 +2,7 @@ export 'package:dabdt/features/backup/data/managers/backup_file_manager.dart';
 
 /*
 // قناة للتواصل مع Android native code
-static const MethodChannel _channel = MethodChannel('debtmax/backup');
+static const MethodChannel _channel = MethodChannel('diomax/backup');
 
 /// الحصول على إصدار Android SDK
 Future<int> getAndroidSdkVersion() async {

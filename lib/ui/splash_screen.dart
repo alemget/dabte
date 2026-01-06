@@ -36,7 +36,7 @@ class SplashScreen extends StatelessWidget {
 
             // App Name
             const Text(
-              'Debt Max',
+              'DioMax',
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.w800,
@@ -47,7 +47,7 @@ class SplashScreen extends StatelessWidget {
             const SizedBox(height: 8),
             // Subtitle
             Text(
-              'ديوني ماكس',
+              'ديوماكس',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,

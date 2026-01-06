@@ -30,13 +30,13 @@ class _BackupPageState extends State<BackupPage> {
   String _processStatus = ''; // لعرض حالة العملية
   String? _driveEmail;
   String? _lastDriveBackup;
-  
+
   // إعدادات النسخ التلقائي المحلي
   bool _localAutoBackup = false;
   String _localFrequency = 'يومياً';
   String _localBackupPath = '';
   TimeOfDay _localBackupTime = const TimeOfDay(hour: 2, minute: 0);
-  
+
   // إعدادات النسخ التلقائي لـ Drive
   bool _driveAutoBackup = false;
   String _driveFrequency = 'يومياً';
@@ -66,10 +66,12 @@ class _BackupPageState extends State<BackupPage> {
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _localBackupPath = prefs.getString('local_backup_path') ?? '/storage/emulated/0/DebtMaxBackups';
+      _localBackupPath =
+          prefs.getString('local_backup_path') ??
+          '/storage/emulated/0/DioMaxBackups';
       _localAutoBackup = prefs.getBool('local_auto_backup') ?? false;
       _localFrequency = prefs.getString('local_frequency') ?? 'يومياً';
-      
+
       _driveEmail = prefs.getString('drive_email');
       // محاولة استرجاع البريد من الخدمة إذا لم يكن محفوظاً
       if (_driveEmail == null) {
@@ -100,10 +102,10 @@ class _BackupPageState extends State<BackupPage> {
     await prefs.setString('local_backup_path', _localBackupPath);
     await prefs.setBool('local_auto_backup', _localAutoBackup);
     await prefs.setString('local_frequency', _localFrequency);
-    
+
     await prefs.setBool('drive_auto_backup', _driveAutoBackup);
     await prefs.setString('drive_frequency', _driveFrequency);
-    
+
     // حفظ التوقيت
     await prefs.setInt('local_backup_hour', _localBackupTime.hour);
     await prefs.setInt('local_backup_minute', _localBackupTime.minute);
@@ -158,8 +160,6 @@ class _BackupPageState extends State<BackupPage> {
     }
   }
 
-
-
   /// فحص الاتصال بالإنترنت
   Future<bool> _checkInternetConnection() async {
     try {
@@ -172,36 +172,35 @@ class _BackupPageState extends State<BackupPage> {
 
   Future<void> _performLocalBackup() async {
     // الحصول على المسار الافتراضي واسم الملف
-    final defaultPath = await LocalBackupService.instance.getDefaultBackupPath();
+    final defaultPath = await LocalBackupService.instance
+        .getDefaultBackupPath();
     final defaultFileName = BackupFileManager.instance.generateBackupFileName();
-    
+
     // عرض مربع حوار تأكيد النسخ الاحتياطي
     final result = await _showBackupConfirmationDialog(
       initialPath: defaultPath,
       initialFileName: defaultFileName,
     );
-    
+
     if (result == null) return; // تم الإلغاء
-    
+
     setState(() {
       _isProcessing = true;
       _processStatus = 'جاري إنشاء النسخة المحلية...';
     });
-    
+
     try {
       // إنشاء النسخة الاحتياطية مع المسار والاسم المحددين
-      final backupResult = await LocalBackupService.instance.createBackupWithName(
-        result['path']!,
-        result['fileName']!,
-      );
-      
+      final backupResult = await LocalBackupService.instance
+          .createBackupWithName(result['path']!, result['fileName']!);
+
       if (backupResult.success && backupResult.filePath != null) {
         // عرض حوار النجاح مع خيار المشاركة
         _showBackupSuccessDialog(
           backupResult.metadata?.fileName ?? result['fileName']!,
           backupResult.filePath!,
         );
-        
+
         // تحديث قائمة النسخ
         setState(() {});
       } else {
@@ -231,7 +230,7 @@ class _BackupPageState extends State<BackupPage> {
   }) async {
     String currentPath = initialPath;
     final fileNameController = TextEditingController(text: initialFileName);
-    
+
     return showDialog<Map<String, String>>(
       context: context,
       barrierDismissible: false,
@@ -239,7 +238,9 @@ class _BackupPageState extends State<BackupPage> {
         builder: (context, setDialogState) => Directionality(
           textDirection: TextDirection.rtl,
           child: AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             title: Row(
               children: [
                 Container(
@@ -248,10 +249,17 @@ class _BackupPageState extends State<BackupPage> {
                     color: const Color(0xFF3B82F6).withAlpha(25),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.save_alt, color: Color(0xFF3B82F6), size: 20),
+                  child: const Icon(
+                    Icons.save_alt,
+                    color: Color(0xFF3B82F6),
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 10),
-                const Text('نسخ احتياطي محلي', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                const Text(
+                  'نسخ احتياطي محلي',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
               ],
             ),
             content: SingleChildScrollView(
@@ -269,29 +277,41 @@ class _BackupPageState extends State<BackupPage> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.info_outline, size: 16, color: Colors.blue.shade700),
+                        Icon(
+                          Icons.info_outline,
+                          size: 16,
+                          color: Colors.blue.shade700,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             'سيتم إنشاء نسخة احتياطية مشفرة من بياناتك',
-                            style: TextStyle(fontSize: 11, color: Colors.blue.shade800),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.blue.shade800,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // مكان التخزين
                   const Text(
                     'مكان التخزين:',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF374151)),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF374151),
+                    ),
                   ),
                   const SizedBox(height: 6),
                   InkWell(
                     onTap: () async {
-                      final selectedDirectory = await FilePicker.platform.getDirectoryPath();
+                      final selectedDirectory = await FilePicker.platform
+                          .getDirectoryPath();
                       if (selectedDirectory != null) {
                         setDialogState(() {
                           currentPath = selectedDirectory;
@@ -308,16 +328,20 @@ class _BackupPageState extends State<BackupPage> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.folder, size: 18, color: Colors.amber.shade700),
+                          Icon(
+                            Icons.folder,
+                            size: 18,
+                            color: Colors.amber.shade700,
+                          ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  currentPath.split('/').last.isEmpty 
-                                    ? 'DebtMaxBackups' 
-                                    : currentPath.split('/').last,
+                                  currentPath.split('/').last.isEmpty
+                                      ? 'DioMaxBackups'
+                                      : currentPath.split('/').last,
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
@@ -340,36 +364,54 @@ class _BackupPageState extends State<BackupPage> {
                           ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFF3B82F6).withAlpha(25),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: const Text(
                               'تغيير',
-                              style: TextStyle(fontSize: 10, color: Color(0xFF3B82F6), fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Color(0xFF3B82F6),
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 14),
-                  
+
                   // اسم الملف
                   const Text(
                     'اسم الملف:',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF374151)),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF374151),
+                    ),
                   ),
                   const SizedBox(height: 6),
                   TextField(
                     controller: fileNameController,
                     style: const TextStyle(fontSize: 12),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.insert_drive_file, size: 18, color: Colors.grey.shade600),
+                      prefixIcon: Icon(
+                        Icons.insert_drive_file,
+                        size: 18,
+                        color: Colors.grey.shade600,
+                      ),
                       hintText: 'اسم الملف',
-                      hintStyle: TextStyle(fontSize: 12, color: Colors.grey.shade400),
+                      hintStyle: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade400,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.grey.shade300),
@@ -382,23 +424,33 @@ class _BackupPageState extends State<BackupPage> {
                         borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(color: Color(0xFF3B82F6)),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       filled: true,
                       fillColor: Colors.grey.shade50,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // ملاحظة
                   Row(
                     children: [
-                      Icon(Icons.lightbulb_outline, size: 12, color: Colors.grey.shade500),
+                      Icon(
+                        Icons.lightbulb_outline,
+                        size: 12,
+                        color: Colors.grey.shade500,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           'يمكنك استخدام أي اسم تريده للملف',
-                          style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey.shade500,
+                          ),
                         ),
                       ),
                     ],
@@ -409,7 +461,10 @@ class _BackupPageState extends State<BackupPage> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('إلغاء', style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                child: Text(
+                  'إلغاء',
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                ),
               ),
               ElevatedButton.icon(
                 onPressed: () {
@@ -430,8 +485,13 @@ class _BackupPageState extends State<BackupPage> {
                 label: const Text('موافق', style: TextStyle(fontSize: 13)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3B82F6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                 ),
               ),
             ],
@@ -447,7 +507,9 @@ class _BackupPageState extends State<BackupPage> {
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -457,7 +519,11 @@ class _BackupPageState extends State<BackupPage> {
                   color: Colors.green.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.check_circle, color: Colors.green, size: 40),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 40,
+                ),
               ),
               const SizedBox(height: 14),
               const Text(
@@ -477,12 +543,19 @@ class _BackupPageState extends State<BackupPage> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.insert_drive_file, size: 14, color: Colors.grey.shade700),
+                        Icon(
+                          Icons.insert_drive_file,
+                          size: 14,
+                          color: Colors.grey.shade700,
+                        ),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             fileName,
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -500,12 +573,19 @@ class _BackupPageState extends State<BackupPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle_outline, size: 14, color: Colors.green.shade700),
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 14,
+                      color: Colors.green.shade700,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        'تم نسخ الملف أيضاً إلى:\nDownload/DebtMaxBackups',
-                        style: TextStyle(fontSize: 10, color: Colors.green.shade700),
+                        'تم نسخ الملف أيضاً إلى:\nDownload/DioMaxBackups',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.green.shade700,
+                        ),
                       ),
                     ),
                   ],
@@ -520,12 +600,19 @@ class _BackupPageState extends State<BackupPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, size: 14, color: Colors.blue.shade700),
+                    Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: Colors.blue.shade700,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         'يمكنك الآن رؤية النسخة من مدير الملفات في مجلد Downloads',
-                        style: TextStyle(fontSize: 10, color: Colors.blue.shade700),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.blue.shade700,
+                        ),
                       ),
                     ),
                   ],
@@ -541,13 +628,17 @@ class _BackupPageState extends State<BackupPage> {
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                Share.shareXFiles([XFile(filePath)], text: 'نسخة احتياطية: $fileName');
+                Share.shareXFiles([
+                  XFile(filePath),
+                ], text: 'نسخة احتياطية: $fileName');
               },
               icon: const Icon(Icons.share, size: 16),
               label: const Text('مشاركة', style: TextStyle(fontSize: 12)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF3B82F6),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ],
@@ -561,26 +652,26 @@ class _BackupPageState extends State<BackupPage> {
       if (Platform.isAndroid) {
         final androidInfo = await DeviceInfoPlugin().androidInfo;
         final sdkInt = androidInfo.version.sdkInt;
-        
+
         // Android 11+ لا يحتاج أذونات لأننا نستخدم SAF
         if (sdkInt >= 30) {
           return true;
         }
-        
+
         // Android 10 وأقل يحتاج أذونات التخزين
         final status = await Permission.storage.status;
-        
+
         if (status.isGranted) {
           return true;
         }
-        
+
         if (status.isDenied) {
           final result = await Permission.storage.request();
           if (result.isGranted) {
             return true;
           }
         }
-        
+
         if (status.isPermanentlyDenied) {
           if (mounted) {
             final shouldOpen = await _showPermissionDialog();
@@ -590,10 +681,10 @@ class _BackupPageState extends State<BackupPage> {
           }
           return false;
         }
-        
+
         return false;
       }
-      
+
       return true;
     } catch (e) {
       print('خطأ في طلب الأذونات: $e');
@@ -607,7 +698,9 @@ class _BackupPageState extends State<BackupPage> {
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: const Text('أذونات التخزين', style: TextStyle(fontSize: 14)),
           content: const Text(
             'يحتاج التطبيق إلى أذونات التخزين لحفظ النسخ الاحتياطية. هل تريد فتح الإعدادات؟',
@@ -621,9 +714,14 @@ class _BackupPageState extends State<BackupPage> {
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
               style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-              child: const Text('فتح الإعدادات', style: TextStyle(fontSize: 12)),
+              child: const Text(
+                'فتح الإعدادات',
+                style: TextStyle(fontSize: 12),
+              ),
             ),
           ],
         ),
@@ -645,18 +743,20 @@ class _BackupPageState extends State<BackupPage> {
         final photosStatus = await Permission.photos.request();
         final videosStatus = await Permission.videos.request();
         final audioStatus = await Permission.audio.request();
-        
+
         // إذا تم منح أي منها، نعتبر أن لدينا وصول
-        if (photosStatus.isGranted || videosStatus.isGranted || audioStatus.isGranted) {
+        if (photosStatus.isGranted ||
+            videosStatus.isGranted ||
+            audioStatus.isGranted) {
           return true;
         }
-        
+
         // محاولة طلب manageExternalStorage
         final manageStatus = await Permission.manageExternalStorage.status;
         if (manageStatus.isGranted) {
           return true;
         }
-        
+
         // عرض حوار لطلب الإذن
         if (mounted) {
           final shouldRequest = await _showManageStorageDialog();
@@ -665,18 +765,18 @@ class _BackupPageState extends State<BackupPage> {
             return result.isGranted;
           }
         }
-        
+
         // حتى بدون الأذونات، FilePicker يجب أن يعمل
         return true;
       }
-      
+
       // Android 11 & 12 (API 30-32)
       if (sdkInt >= 30) {
         final manageStatus = await Permission.manageExternalStorage.status;
         if (manageStatus.isGranted) {
           return true;
         }
-        
+
         // عرض حوار لطلب الإذن
         if (mounted) {
           final shouldRequest = await _showManageStorageDialog();
@@ -687,20 +787,19 @@ class _BackupPageState extends State<BackupPage> {
             }
           }
         }
-        
+
         // FilePicker يجب أن يعمل حتى بدون MANAGE_EXTERNAL_STORAGE
         return true;
       }
-      
+
       // Android 10 وأقل
       final storageStatus = await Permission.storage.status;
       if (storageStatus.isGranted) {
         return true;
       }
-      
+
       final result = await Permission.storage.request();
       return result.isGranted;
-      
     } catch (e) {
       print('خطأ في طلب أذونات التخزين: $e');
       return true; // نحاول المتابعة على أي حال
@@ -714,7 +813,9 @@ class _BackupPageState extends State<BackupPage> {
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Row(
             children: [
               Container(
@@ -723,7 +824,11 @@ class _BackupPageState extends State<BackupPage> {
                   color: Colors.orange.shade100,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.folder_open, color: Colors.orange.shade700, size: 20),
+                child: Icon(
+                  Icons.folder_open,
+                  color: Colors.orange.shade700,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 10),
               const Expanded(
@@ -746,12 +851,19 @@ class _BackupPageState extends State<BackupPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, size: 18, color: Colors.blue.shade700),
+                    Icon(
+                      Icons.info_outline,
+                      size: 18,
+                      color: Colors.blue.shade700,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'لتتمكن من رؤية واختيار ملفات النسخ الاحتياطية، يجب السماح للتطبيق بالوصول إلى جميع الملفات.',
-                        style: TextStyle(fontSize: 11, color: Colors.blue.shade800),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.blue.shade800,
+                        ),
                       ),
                     ),
                   ],
@@ -767,7 +879,10 @@ class _BackupPageState extends State<BackupPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text('لاحقاً', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+              child: Text(
+                'لاحقاً',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
             ),
             ElevatedButton.icon(
               onPressed: () => Navigator.pop(context, true),
@@ -775,7 +890,9 @@ class _BackupPageState extends State<BackupPage> {
               label: const Text('السماح', style: TextStyle(fontSize: 12)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ],
@@ -788,24 +905,26 @@ class _BackupPageState extends State<BackupPage> {
   Future<void> _showSavedBackupsDialog() async {
     // تحميل قائمة النسخ
     final backups = await LocalBackupService.instance.listBackups();
-    
+
     if (!mounted) return;
-    
+
     if (backups.isEmpty) {
       _showErrorDialog(
         'لا توجد نسخ محفوظة',
         'لا توجد نسخ احتياطية محفوظة في التطبيق.\n\n'
-        'يمكنك استخدام خيار "تصفح جميع الملفات" للبحث عن نسخ احتياطية في مكان آخر.',
+            'يمكنك استخدام خيار "تصفح جميع الملفات" للبحث عن نسخ احتياطية في مكان آخر.',
       );
       return;
     }
-    
+
     final selectedBackup = await showDialog<BackupMetadata>(
       context: context,
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Row(
             children: [
               Container(
@@ -814,7 +933,11 @@ class _BackupPageState extends State<BackupPage> {
                   color: const Color(0xFFF59E0B).withAlpha(25),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.backup, color: Color(0xFFF59E0B), size: 20),
+                child: const Icon(
+                  Icons.backup,
+                  color: Color(0xFFF59E0B),
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 10),
               const Expanded(
@@ -839,12 +962,19 @@ class _BackupPageState extends State<BackupPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, size: 16, color: Colors.amber.shade700),
+                      Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Colors.amber.shade700,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'اختر النسخة التي تريد استعادتها',
-                          style: TextStyle(fontSize: 11, color: Colors.amber.shade800),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.amber.shade800,
+                          ),
                         ),
                       ),
                     ],
@@ -860,17 +990,21 @@ class _BackupPageState extends State<BackupPage> {
                     itemBuilder: (context, index) {
                       final backup = backups[index];
                       final isFirst = index == 0;
-                      
+
                       return InkWell(
                         onTap: () => Navigator.pop(context, backup),
                         borderRadius: BorderRadius.circular(10),
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: isFirst ? const Color(0xFFF0FDF4) : Colors.grey.shade50,
+                            color: isFirst
+                                ? const Color(0xFFF0FDF4)
+                                : Colors.grey.shade50,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: isFirst ? const Color(0xFF10B981) : Colors.grey.shade200,
+                              color: isFirst
+                                  ? const Color(0xFF10B981)
+                                  : Colors.grey.shade200,
                             ),
                           ),
                           child: Row(
@@ -880,14 +1014,16 @@ class _BackupPageState extends State<BackupPage> {
                                 height: 40,
                                 decoration: BoxDecoration(
                                   color: isFirst
-                                    ? const Color(0xFF10B981).withAlpha(25)
-                                    : Colors.grey.shade100,
+                                      ? const Color(0xFF10B981).withAlpha(25)
+                                      : Colors.grey.shade100,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Icon(
                                   Icons.backup,
                                   size: 20,
-                                  color: isFirst ? const Color(0xFF10B981) : Colors.grey.shade600,
+                                  color: isFirst
+                                      ? const Color(0xFF10B981)
+                                      : Colors.grey.shade600,
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -909,10 +1045,16 @@ class _BackupPageState extends State<BackupPage> {
                                         ),
                                         if (isFirst)
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
                                             decoration: BoxDecoration(
-                                              color: const Color(0xFF10B981).withAlpha(25),
-                                              borderRadius: BorderRadius.circular(4),
+                                              color: const Color(
+                                                0xFF10B981,
+                                              ).withAlpha(25),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
                                             child: const Text(
                                               'الأحدث',
@@ -939,7 +1081,9 @@ class _BackupPageState extends State<BackupPage> {
                               Icon(
                                 Icons.chevron_left,
                                 size: 18,
-                                color: isFirst ? const Color(0xFF10B981) : Colors.grey.shade400,
+                                color: isFirst
+                                    ? const Color(0xFF10B981)
+                                    : Colors.grey.shade400,
                               ),
                             ],
                           ),
@@ -954,15 +1098,18 @@ class _BackupPageState extends State<BackupPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('إلغاء', style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+              child: Text(
+                'إلغاء',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+              ),
             ),
           ],
         ),
       ),
     );
-    
+
     if (selectedBackup == null) return;
-    
+
     // استعادة النسخة المختارة
     await _restoreSelectedBackup(selectedBackup);
   }
@@ -975,16 +1122,18 @@ class _BackupPageState extends State<BackupPage> {
       fileSize: backup.formattedSize,
       filePath: backup.filePath,
     );
-    
+
     if (confirm != true) return;
-    
+
     setState(() => _isProcessing = true);
-    
+
     try {
-      final result = await LocalBackupService.instance.restoreBackup(backup.filePath);
-      
+      final result = await LocalBackupService.instance.restoreBackup(
+        backup.filePath,
+      );
+
       setState(() => _isProcessing = false);
-      
+
       if (result.success) {
         await _refreshClientsAfterRestore();
         _showRestoreSuccessDialog(
@@ -992,7 +1141,7 @@ class _BackupPageState extends State<BackupPage> {
           fileSize: backup.formattedSize,
           clientsCount: result.clientsCount,
         );
-        
+
         // تحديث الصفحة
         setState(() {});
       } else {
@@ -1009,6 +1158,7 @@ class _BackupPageState extends State<BackupPage> {
       );
     }
   }
+
   Future<void> _performLocalRestore() async {
     try {
       String? fileType = await _showFileTypeDialog();
@@ -1033,7 +1183,7 @@ class _BackupPageState extends State<BackupPage> {
       setState(() => _isProcessing = true);
 
       FilePickerResult? result;
-      
+
       try {
         // استخدام FileType.any دائماً لتجنب مشاكل Android
         // ثم التحقق من الامتداد بعد الاختيار
@@ -1057,7 +1207,7 @@ class _BackupPageState extends State<BackupPage> {
             _showErrorDialog(
               'نوع ملف غير صحيح',
               'الملف المحدد ليس ملف نسخة احتياطية (.db أو .dbk).\n\n'
-              'يرجى اختيار ملف نسخة احتياطية صحيح.',
+                  'يرجى اختيار ملف نسخة احتياطية صحيح.',
             );
             return;
           }
@@ -1090,11 +1240,13 @@ class _BackupPageState extends State<BackupPage> {
       if (finalFilePath == null && fileBytes != null && fileBytes.isNotEmpty) {
         try {
           final tempDir = await getTemporaryDirectory();
-          final tempFile = File(path.join(
-            tempDir.path,
-            'restore_${DateTime.now().millisecondsSinceEpoch}.db',
-          ));
-          
+          final tempFile = File(
+            path.join(
+              tempDir.path,
+              'restore_${DateTime.now().millisecondsSinceEpoch}.db',
+            ),
+          );
+
           await tempFile.writeAsBytes(fileBytes);
           finalFilePath = tempFile.path;
         } catch (e) {
@@ -1121,7 +1273,10 @@ class _BackupPageState extends State<BackupPage> {
       final file = File(finalFilePath);
       if (!await file.exists()) {
         setState(() => _isProcessing = false);
-        _showErrorDialog('الملف غير موجود', 'الملف المحدد غير موجود أو تم حذفه.');
+        _showErrorDialog(
+          'الملف غير موجود',
+          'الملف المحدد غير موجود أو تم حذفه.',
+        );
         return;
       }
 
@@ -1134,7 +1289,7 @@ class _BackupPageState extends State<BackupPage> {
 
       // تأكيد الاستعادة
       setState(() => _isProcessing = false);
-      
+
       final confirm = await _showRestoreConfirmDialog(
         fileName: selectedFile.name,
         fileSize: (fileSize / (1024 * 1024)).toStringAsFixed(2),
@@ -1156,8 +1311,10 @@ class _BackupPageState extends State<BackupPage> {
       setState(() => _isProcessing = true);
 
       // بدء الاستعادة
-      final restoreResult = await LocalBackupService.instance.restoreBackup(finalFilePath);
-      
+      final restoreResult = await LocalBackupService.instance.restoreBackup(
+        finalFilePath,
+      );
+
       // تنظيف الملف المؤقت
       if (finalFilePath.contains('restore_')) {
         try {
@@ -1171,7 +1328,7 @@ class _BackupPageState extends State<BackupPage> {
       }
 
       setState(() => _isProcessing = false);
-      
+
       if (restoreResult.success) {
         await _refreshClientsAfterRestore();
         _showRestoreSuccessDialog(
@@ -1185,11 +1342,10 @@ class _BackupPageState extends State<BackupPage> {
           restoreResult.errorMessage ?? 'حدث خطأ أثناء استعادة البيانات.',
         );
       }
-
     } catch (e, stackTrace) {
       print('خطأ غير متوقع في الاستعادة: $e');
       print('Stack trace: $stackTrace');
-      
+
       setState(() => _isProcessing = false);
       _showErrorDialog(
         'حدث خطأ غير متوقع',
@@ -1204,12 +1360,17 @@ class _BackupPageState extends State<BackupPage> {
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: const Row(
             children: [
               Icon(Icons.restore, color: Color(0xFFF59E0B), size: 20),
               SizedBox(width: 8),
-              Text('اختر مصدر الاستعادة', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+              Text(
+                'اختر مصدر الاستعادة',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
           content: Column(
@@ -1221,7 +1382,7 @@ class _BackupPageState extends State<BackupPage> {
                 style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
               ),
               const SizedBox(height: 16),
-              
+
               // خيار النسخ المحفوظة (الأفضل)
               _buildFileTypeOption(
                 context: context,
@@ -1232,7 +1393,7 @@ class _BackupPageState extends State<BackupPage> {
                 highlighted: true,
               ),
               const SizedBox(height: 12),
-              
+
               // خيار جميع الملفات (يعمل دائماً)
               _buildFileTypeOption(
                 context: context,
@@ -1242,7 +1403,7 @@ class _BackupPageState extends State<BackupPage> {
                 value: 'any',
               ),
               const SizedBox(height: 12),
-              
+
               // خيار ملفات db فقط
               _buildFileTypeOption(
                 context: context,
@@ -1278,10 +1439,14 @@ class _BackupPageState extends State<BackupPage> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: highlighted ? const Color(0xFFEFF6FF) : const Color(0xFFF9FAFB),
+          color: highlighted
+              ? const Color(0xFFEFF6FF)
+              : const Color(0xFFF9FAFB),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: highlighted ? const Color(0xFF3B82F6) : const Color(0xFFE5E7EB),
+            color: highlighted
+                ? const Color(0xFF3B82F6)
+                : const Color(0xFFE5E7EB),
             width: highlighted ? 1.5 : 1,
           ),
         ),
@@ -1290,15 +1455,17 @@ class _BackupPageState extends State<BackupPage> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: highlighted 
-                  ? const Color(0xFF3B82F6).withAlpha(30)
-                  : const Color(0xFF5C6EF8).withAlpha(25),
+                color: highlighted
+                    ? const Color(0xFF3B82F6).withAlpha(30)
+                    : const Color(0xFF5C6EF8).withAlpha(25),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
-                icon, 
-                size: 18, 
-                color: highlighted ? const Color(0xFF3B82F6) : const Color(0xFF5C6EF8),
+                icon,
+                size: 18,
+                color: highlighted
+                    ? const Color(0xFF3B82F6)
+                    : const Color(0xFF5C6EF8),
               ),
             ),
             const SizedBox(width: 12),
@@ -1314,13 +1481,18 @@ class _BackupPageState extends State<BackupPage> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: highlighted ? const Color(0xFF1D4ED8) : const Color(0xFF1F2937),
+                            color: highlighted
+                                ? const Color(0xFF1D4ED8)
+                                : const Color(0xFF1F2937),
                           ),
                         ),
                       ),
                       if (highlighted)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFF10B981).withAlpha(30),
                             borderRadius: BorderRadius.circular(4),
@@ -1348,9 +1520,11 @@ class _BackupPageState extends State<BackupPage> {
               ),
             ),
             Icon(
-              Icons.chevron_left, 
-              size: 18, 
-              color: highlighted ? const Color(0xFF3B82F6) : const Color(0xFF9CA3AF),
+              Icons.chevron_left,
+              size: 18,
+              color: highlighted
+                  ? const Color(0xFF3B82F6)
+                  : const Color(0xFF9CA3AF),
             ),
           ],
         ),
@@ -1368,12 +1542,21 @@ class _BackupPageState extends State<BackupPage> {
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: const Row(
             children: [
-              Icon(Icons.warning_amber_rounded, color: Color(0xFFF59E0B), size: 20),
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Color(0xFFF59E0B),
+                size: 20,
+              ),
               SizedBox(width: 8),
-              Text('تأكيد الاستعادة', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+              Text(
+                'تأكيد الاستعادة',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
           content: Column(
@@ -1389,19 +1572,30 @@ class _BackupPageState extends State<BackupPage> {
                 ),
                 child: const Row(
                   children: [
-                    Icon(Icons.info_outline, size: 16, color: Color(0xFFF59E0B)),
+                    Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: Color(0xFFF59E0B),
+                    ),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'سيتم استبدال جميع البيانات الحالية بالبيانات من النسخة الاحتياطية.',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF92400E)),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF92400E),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 16),
-              _buildFileInfoRow(Icons.insert_drive_file, 'اسم الملف:', fileName),
+              _buildFileInfoRow(
+                Icons.insert_drive_file,
+                'اسم الملف:',
+                fileName,
+              ),
               const SizedBox(height: 8),
               _buildFileInfoRow(Icons.storage, 'حجم الملف:', '$fileSize MB'),
             ],
@@ -1415,9 +1609,14 @@ class _BackupPageState extends State<BackupPage> {
               onPressed: () => Navigator.pop(context, true),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF59E0B),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-              child: const Text('متابعة الاستعادة', style: TextStyle(fontSize: 13)),
+              child: const Text(
+                'متابعة الاستعادة',
+                style: TextStyle(fontSize: 13),
+              ),
             ),
           ],
         ),
@@ -1432,7 +1631,11 @@ class _BackupPageState extends State<BackupPage> {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF374151)),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF374151),
+          ),
         ),
         const SizedBox(width: 8),
         Expanded(
@@ -1449,7 +1652,10 @@ class _BackupPageState extends State<BackupPage> {
   Future<void> _performDriveBackup() async {
     // التحقق من الاتصال
     if (!await _checkInternetConnection()) {
-      _showErrorDialog('لا يوجد اتصال', 'يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.');
+      _showErrorDialog(
+        'لا يوجد اتصال',
+        'يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.',
+      );
       return;
     }
 
@@ -1458,17 +1664,17 @@ class _BackupPageState extends State<BackupPage> {
       await _performGoogleSignIn();
       if (_driveEmail == null) return; // فشل تسجيل الدخول
     }
-    
+
     setState(() {
       _isProcessing = true;
       _processStatus = 'جاري التحضير...';
     });
-    
+
     try {
       // أولاً: إنشاء نسخة محلية مؤقتة
       setState(() => _processStatus = 'جاري إنشاء ملف مؤقت...');
       final tempResult = await LocalBackupService.instance.createTempBackup();
-      
+
       if (!tempResult.success || tempResult.filePath == null) {
         _showErrorDialog(
           'فشل إنشاء النسخة',
@@ -1476,13 +1682,13 @@ class _BackupPageState extends State<BackupPage> {
         );
         return;
       }
-      
+
       // ثانياً: رفع النسخة إلى Drive
       final uploadResult = await DriveBackupService.instance.uploadBackup(
         tempResult.filePath!,
         onProgress: (status) => setState(() => _processStatus = status),
       );
-      
+
       if (uploadResult.success) {
         await _loadSettings();
         if (mounted) {
@@ -1510,7 +1716,10 @@ class _BackupPageState extends State<BackupPage> {
   Future<void> _performDriveRestore() async {
     // التحقق من الاتصال
     if (!await _checkInternetConnection()) {
-      _showErrorDialog('لا يوجد اتصال', 'يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.');
+      _showErrorDialog(
+        'لا يوجد اتصال',
+        'يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.',
+      );
       return;
     }
 
@@ -1524,56 +1733,61 @@ class _BackupPageState extends State<BackupPage> {
       _isProcessing = true;
       _processStatus = 'جاري البحث عن النسخ...';
     });
-    
+
     try {
       final backups = await DriveBackupService.instance.listBackups();
       setState(() {
         _isProcessing = false;
         _processStatus = '';
       });
-      
+
       if (backups.isEmpty) {
-        _showErrorDialog('لا توجد نسخ', 'لا توجد نسخ احتياطية محفوظة في Google Drive');
+        _showErrorDialog(
+          'لا توجد نسخ',
+          'لا توجد نسخ احتياطية محفوظة في Google Drive',
+        );
         return;
       }
-      
+
       // عرض قائمة النسخ للاختيار
       final selectedBackup = await _showDriveBackupsDialog(backups);
       if (selectedBackup == null) return;
-      
+
       // تأكيد الاستعادة
       final confirm = await _showConfirmDialog(
         'استعادة من Drive',
         'سيتم استبدال جميع البيانات الحالية بالبيانات من النسخة:\n${selectedBackup.name}\n\nهل تريد المتابعة؟',
       );
-      
+
       if (confirm != true) return;
-      
+
       setState(() {
         _isProcessing = true;
         _processStatus = 'جاري التحضير للتنزيل...';
       });
-      
+
       // تنزيل النسخة
       final downloadedPath = await DriveBackupService.instance.downloadBackup(
         fileId: selectedBackup.id,
         onProgress: (status) => setState(() => _processStatus = status),
       );
-      
+
       if (downloadedPath == null) {
         _showErrorDialog('فشل التنزيل', 'حدث خطأ أثناء تنزيل النسخة من Drive');
         return;
       }
-      
+
       setState(() => _processStatus = 'جاري استعادة البيانات...');
       // استعادة النسخة
-      final restoreResult = await LocalBackupService.instance.restoreBackup(downloadedPath);
-      
+      final restoreResult = await LocalBackupService.instance.restoreBackup(
+        downloadedPath,
+      );
+
       setState(() {
         _isProcessing = false;
         _processStatus = '';
       });
-      
+
       if (restoreResult.success) {
         await _refreshClientsAfterRestore();
         _showRestoreSuccessDialog(
@@ -1612,7 +1826,7 @@ class _BackupPageState extends State<BackupPage> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'نحن نصل فقط للمجلد الخاص بنسخ تطبيق DebtMax ولا نرى ملفاتك الأخرى في Google Drive.',
+              'نحن نصل فقط للمجلد الخاص بنسخ تطبيق DioMax ولا نرى ملفاتك الأخرى في Google Drive.',
               style: TextStyle(fontSize: 10, color: Colors.blue.shade800),
             ),
           ),
@@ -1622,13 +1836,17 @@ class _BackupPageState extends State<BackupPage> {
   }
 
   /// عرض قائمة النسخ من Drive
-  Future<DriveBackupInfo?> _showDriveBackupsDialog(List<DriveBackupInfo> backups) async {
+  Future<DriveBackupInfo?> _showDriveBackupsDialog(
+    List<DriveBackupInfo> backups,
+  ) async {
     return showDialog<DriveBackupInfo>(
       context: context,
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Row(
             children: [
               Container(
@@ -1637,7 +1855,11 @@ class _BackupPageState extends State<BackupPage> {
                   color: const Color(0xFF8B5CF6).withAlpha(25),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.cloud, color: Color(0xFF8B5CF6), size: 20),
+                child: const Icon(
+                  Icons.cloud,
+                  color: Color(0xFF8B5CF6),
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 10),
               const Expanded(
@@ -1659,7 +1881,7 @@ class _BackupPageState extends State<BackupPage> {
                 itemBuilder: (context, index) {
                   final backup = backups[index];
                   final isFirst = index == 0;
-                  
+
                   return InkWell(
                     onTap: () => Navigator.pop(context, backup),
                     borderRadius: BorderRadius.circular(10),
@@ -1682,13 +1904,17 @@ class _BackupPageState extends State<BackupPage> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: isFirst ? const Color(0xFFEFF6FF) : Colors.grey.shade50,
+                              color: isFirst
+                                  ? const Color(0xFFEFF6FF)
+                                  : Colors.grey.shade50,
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.cloud_done,
                               size: 18,
-                              color: isFirst ? const Color(0xFF3B82F6) : Colors.grey.shade500,
+                              color: isFirst
+                                  ? const Color(0xFF3B82F6)
+                                  : Colors.grey.shade500,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -1698,31 +1924,42 @@ class _BackupPageState extends State<BackupPage> {
                               children: [
                                 Text(
                                   backup.name,
-                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   '${backup.formattedDate} • ${backup.formattedSize}',
-                                  style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.grey.shade600,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                           if (isFirst)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFEFF6FF),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: const Color(0xFFDBEAFE)),
+                                border: Border.all(
+                                  color: const Color(0xFFDBEAFE),
+                                ),
                               ),
                               child: const Text(
                                 'الأحدث',
                                 style: TextStyle(
-                                  fontSize: 10, 
-                                  color: Color(0xFF3B82F6), 
-                                  fontWeight: FontWeight.w600
+                                  fontSize: 10,
+                                  color: Color(0xFF3B82F6),
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
@@ -1737,7 +1974,10 @@ class _BackupPageState extends State<BackupPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('إلغاء', style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+              child: Text(
+                'إلغاء',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+              ),
             ),
           ],
         ),
@@ -1748,17 +1988,23 @@ class _BackupPageState extends State<BackupPage> {
   /// تسجيل الدخول بـ Google
   Future<void> _performGoogleSignIn() async {
     setState(() => _isProcessing = true);
-    
+
     try {
       final account = await DriveBackupService.instance.signIn();
-      
+
       if (account != null) {
         await _loadSettings();
         if (mounted) {
-          _showSuccessDialog('تم تسجيل الدخول', 'مرحباً ${account.displayName ?? account.email}');
+          _showSuccessDialog(
+            'تم تسجيل الدخول',
+            'مرحباً ${account.displayName ?? account.email}',
+          );
         }
       } else {
-        _showErrorDialog('فشل تسجيل الدخول', 'لم يتم تسجيل الدخول. يرجى المحاولة مرة أخرى.');
+        _showErrorDialog(
+          'فشل تسجيل الدخول',
+          'لم يتم تسجيل الدخول. يرجى المحاولة مرة أخرى.',
+        );
       }
     } catch (e) {
       _showErrorDialog('خطأ في تسجيل الدخول', e.toString());
@@ -1786,7 +2032,9 @@ class _BackupPageState extends State<BackupPage> {
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1796,12 +2044,25 @@ class _BackupPageState extends State<BackupPage> {
                   color: Colors.green.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.check_circle, color: Colors.green, size: 36),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 36,
+                ),
               ),
               const SizedBox(height: 12),
-              Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(message, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+              Text(
+                message,
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+              ),
             ],
           ),
           actions: [
@@ -1821,7 +2082,9 @@ class _BackupPageState extends State<BackupPage> {
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Row(
             children: [
               Container(
@@ -1830,13 +2093,20 @@ class _BackupPageState extends State<BackupPage> {
                   color: Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                child: const Icon(
+                  Icons.error_outline,
+                  color: Colors.red,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -1853,8 +2123,13 @@ class _BackupPageState extends State<BackupPage> {
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
               ),
               child: const Text('حسناً', style: TextStyle(fontSize: 13)),
             ),
@@ -1875,7 +2150,9 @@ class _BackupPageState extends State<BackupPage> {
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1885,7 +2162,11 @@ class _BackupPageState extends State<BackupPage> {
                   color: const Color(0xFF10B981).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 48),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Color(0xFF10B981),
+                  size: 48,
+                ),
               ),
               const SizedBox(height: 16),
               const Text(
@@ -1902,12 +2183,24 @@ class _BackupPageState extends State<BackupPage> {
                 ),
                 child: Column(
                   children: [
-                    _buildSuccessInfoRow(Icons.insert_drive_file, 'الملف:', fileName),
+                    _buildSuccessInfoRow(
+                      Icons.insert_drive_file,
+                      'الملف:',
+                      fileName,
+                    ),
                     const SizedBox(height: 8),
-                    _buildSuccessInfoRow(Icons.storage, 'الحجم:', '$fileSize MB'),
+                    _buildSuccessInfoRow(
+                      Icons.storage,
+                      'الحجم:',
+                      '$fileSize MB',
+                    ),
                     if (clientsCount != null) ...[
                       const SizedBox(height: 8),
-                      _buildSuccessInfoRow(Icons.people, 'العملاء:', '$clientsCount عميل'),
+                      _buildSuccessInfoRow(
+                        Icons.people,
+                        'العملاء:',
+                        '$clientsCount عميل',
+                      ),
                     ],
                   ],
                 ),
@@ -1921,12 +2214,19 @@ class _BackupPageState extends State<BackupPage> {
                 ),
                 child: const Row(
                   children: [
-                    Icon(Icons.info_outline, size: 16, color: Color(0xFF3B82F6)),
+                    Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: Color(0xFF3B82F6),
+                    ),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'تم استرجاع جميع البيانات بنجاح. يمكنك الآن استخدام التطبيق.',
-                        style: TextStyle(fontSize: 11, color: Color(0xFF1E40AF)),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF1E40AF),
+                        ),
                       ),
                     ),
                   ],
@@ -1939,8 +2239,13 @@ class _BackupPageState extends State<BackupPage> {
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF10B981),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
               child: const Text('حسناً', style: TextStyle(fontSize: 13)),
             ),
@@ -1957,7 +2262,11 @@ class _BackupPageState extends State<BackupPage> {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF065F46)),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF065F46),
+          ),
         ),
         const SizedBox(width: 8),
         Expanded(
@@ -1977,7 +2286,9 @@ class _BackupPageState extends State<BackupPage> {
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: Text(title, style: const TextStyle(fontSize: 14)),
           content: Text(message, style: const TextStyle(fontSize: 12)),
           actions: [
@@ -1989,7 +2300,9 @@ class _BackupPageState extends State<BackupPage> {
               onPressed: () => Navigator.pop(context, true),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: const Text('متابعة', style: TextStyle(fontSize: 12)),
             ),
@@ -2005,8 +2318,13 @@ class _BackupPageState extends State<BackupPage> {
       builder: (context) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: const Text('تكرار النسخ الاحتياطي', style: TextStyle(fontSize: 14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'تكرار النسخ الاحتياطي',
+            style: TextStyle(fontSize: 14),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -2047,7 +2365,10 @@ class _BackupPageState extends State<BackupPage> {
             appBar: AppBar(
               elevation: 0,
               backgroundColor: Colors.white,
-              title: const Text('النسخ الاحتياطي', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+              title: const Text(
+                'النسخ الاحتياطي',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
               centerTitle: true,
             ),
             body: SingleChildScrollView(
@@ -2055,251 +2376,286 @@ class _BackupPageState extends State<BackupPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-              // قسم Gmail
-              if (_driveEmail != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.red.shade50, Colors.red.shade100],
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.red.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.email, color: Colors.red.shade600, size: 16),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(_driveEmail!, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
-                            if (_lastDriveBackup != null)
-                              Text('آخر نسخة: $_lastDriveBackup', style: TextStyle(fontSize: 9, color: Colors.grey.shade700)),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.logout, size: 14, color: Colors.red.shade600),
-                        onPressed: () async {
-                          await DriveBackupService.instance.unlinkAccount();
-                          await _loadSettings();
-                        },
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 14),
-              ],
-
-              // قسم النسخ المحلي
-              _buildSectionTitle(Icons.phone_android, 'النسخ المحلي'),
-              const SizedBox(height: 8),
-              
-              BackupActionButton(
-                icon: Icons.save_alt,
-                title: 'نسخ احتياطي محلي',
-                subtitle: 'حفظ على الجهاز',
-                color: const Color(0xFF3B82F6),
-                onTap: _performLocalBackup,
-                isLoading: _isProcessing,
-              ),
-              const SizedBox(height: 8),
-              BackupActionButton(
-                icon: Icons.restore,
-                title: 'استعادة محلية',
-                subtitle: 'من ملف على الجهاز',
-                color: const Color(0xFFF59E0B),
-                onTap: _performLocalRestore,
-                isLoading: _isProcessing,
-              ),
-              
-              const SizedBox(height: 14),
-              
-              // قائمة النسخ المحفوظة
-              BackupListWidget(
-                key: _backupListKey,
-                onRestoreComplete: () {
-                  _refreshClientsAfterRestore();
-                  setState(() {});
-                },
-                onBackupDeleted: () {
-                  setState(() {});
-                },
-              ),
-              
-              const SizedBox(height: 10),
-              _buildOptionsCard(
-                children: [
-                  _buildOptionRow(
-                    icon: Icons.sync,
-                    title: 'نسخ تلقائي',
-                    trailing: Switch(
-                      value: _localAutoBackup,
-                      onChanged: (value) async {
-                        if (value) {
-                          await BackgroundBackupService.requestNotificationPermission();
-                        }
-                        setState(() => _localAutoBackup = value);
-                        await _saveSettings();
-                      },
-                      activeColor: Colors.green,
-                    ),
-                  ),
-                  if (_localAutoBackup) ...[
-                    const Divider(height: 1),
-                    _buildOptionRow(
-                      icon: Icons.schedule,
-                      title: 'التكرار',
-                      subtitle: _localFrequency,
-                      onTap: () => _showFrequencyDialog(true),
-                    ),
-                    const Divider(height: 1),
-                    _buildOptionRow(
-                      icon: Icons.access_time, // icon for time
-                      title: 'وقت النسخ',
-                      subtitle: _localBackupTime.format(context),
-                      onTap: () => _selectTime(true),
-                    ),
-                  ],
-                  const Divider(height: 1),
-                    _buildOptionRow(
-                      icon: Icons.folder,
-                      title: 'موقع الحفظ',
-                      subtitle: _localBackupPath.split('/').last,
-                      onTap: _selectLocalBackupPath,
-                    ),
-                    const Divider(height: 1),
-                    _buildOptionRow(
-                      icon: Icons.timer,
-                      title: 'تجربة سريعة (30 ثانية)',
-                      subtitle: 'اختبار فوري لنظام النسخ الجديد',
-                      onTap: () async {
-                         await BackgroundBackupService.runQuickTest();
-                         if (mounted) {
-                           ScaffoldMessenger.of(context).showSnackBar(
-                             const SnackBar(content: Text('تمت الجدولة! انتظر 30 ثانية للإشعار')),
-                           );
-                         }
-                      },
-                    ),
-                ],
-              ),
-
-              const SizedBox(height: 18),
-
-              // قسم Google Drive
-              _buildSectionTitle(Icons.cloud, 'Google Drive'),
-              const SizedBox(height: 8),
-              
-              BackupActionButton(
-                icon: Icons.cloud_upload,
-                title: 'نسخ احتياطي - Drive',
-                subtitle: _driveEmail == null ? 'سجل دخول أولاً' : 'رفع إلى Drive',
-                color: const Color(0xFF10B981),
-                onTap: _performDriveBackup,
-                isLoading: _isProcessing,
-              ),
-              const SizedBox(height: 8),
-              BackupActionButton(
-                icon: Icons.cloud_download,
-                title: 'استعادة من Drive',
-                subtitle: _driveEmail == null ? 'سجل دخول أولاً' : 'تنزيل آخر نسخة',
-                color: const Color(0xFF8B5CF6),
-                onTap: _performDriveRestore,
-                isLoading: _isProcessing,
-              ),
-
-              // ملاحظة الخصوصية الجديدة
-              _buildPrivacyNote(),
-              
-              const SizedBox(height: 10),
-              _buildOptionsCard(
-                children: [
-                  if (_driveEmail == null)
-                    _buildOptionRow(
-                      icon: Icons.login,
-                      title: 'تسجيل الدخول',
-                      subtitle: 'مطلوب للنسخ الاحتياطي',
-                      onTap: _showGmailLoginDialog,
-                    ),
-                  
+                  // قسم Gmail
                   if (_driveEmail != null) ...[
-                    _buildOptionRow(
-                      icon: Icons.sync,
-                      title: 'نسخ تلقائي',
-                      trailing: Switch(
-                        value: _driveAutoBackup,
-                        onChanged: (value) async {
-                          if (value) {
-                            await BackgroundBackupService.requestNotificationPermission();
-                          }
-                          setState(() => _driveAutoBackup = value);
-                          await _saveSettings();
-                        },
-                        activeColor: Colors.green,
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.red.shade50, Colors.red.shade100],
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.red.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.email,
+                              color: Colors.red.shade600,
+                              size: 16,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _driveEmail!,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                if (_lastDriveBackup != null)
+                                  Text(
+                                    'آخر نسخة: $_lastDriveBackup',
+                                    style: TextStyle(
+                                      fontSize: 9,
+                                      color: Colors.grey.shade700,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.logout,
+                              size: 14,
+                              color: Colors.red.shade600,
+                            ),
+                            onPressed: () async {
+                              await DriveBackupService.instance.unlinkAccount();
+                              await _loadSettings();
+                            },
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
                       ),
                     ),
-                    if (_driveAutoBackup) ...[
+                    const SizedBox(height: 14),
+                  ],
+
+                  // قسم النسخ المحلي
+                  _buildSectionTitle(Icons.phone_android, 'النسخ المحلي'),
+                  const SizedBox(height: 8),
+
+                  BackupActionButton(
+                    icon: Icons.save_alt,
+                    title: 'نسخ احتياطي محلي',
+                    subtitle: 'حفظ على الجهاز',
+                    color: const Color(0xFF3B82F6),
+                    onTap: _performLocalBackup,
+                    isLoading: _isProcessing,
+                  ),
+                  const SizedBox(height: 8),
+                  BackupActionButton(
+                    icon: Icons.restore,
+                    title: 'استعادة محلية',
+                    subtitle: 'من ملف على الجهاز',
+                    color: const Color(0xFFF59E0B),
+                    onTap: _performLocalRestore,
+                    isLoading: _isProcessing,
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // قائمة النسخ المحفوظة
+                  BackupListWidget(
+                    key: _backupListKey,
+                    onRestoreComplete: () {
+                      _refreshClientsAfterRestore();
+                      setState(() {});
+                    },
+                    onBackupDeleted: () {
+                      setState(() {});
+                    },
+                  ),
+
+                  const SizedBox(height: 10),
+                  _buildOptionsCard(
+                    children: [
+                      _buildOptionRow(
+                        icon: Icons.sync,
+                        title: 'نسخ تلقائي',
+                        trailing: Switch(
+                          value: _localAutoBackup,
+                          onChanged: (value) async {
+                            if (value) {
+                              await BackgroundBackupService.requestNotificationPermission();
+                            }
+                            setState(() => _localAutoBackup = value);
+                            await _saveSettings();
+                          },
+                          activeColor: Colors.green,
+                        ),
+                      ),
+                      if (_localAutoBackup) ...[
+                        const Divider(height: 1),
+                        _buildOptionRow(
+                          icon: Icons.schedule,
+                          title: 'التكرار',
+                          subtitle: _localFrequency,
+                          onTap: () => _showFrequencyDialog(true),
+                        ),
+                        const Divider(height: 1),
+                        _buildOptionRow(
+                          icon: Icons.access_time, // icon for time
+                          title: 'وقت النسخ',
+                          subtitle: _localBackupTime.format(context),
+                          onTap: () => _selectTime(true),
+                        ),
+                      ],
                       const Divider(height: 1),
                       _buildOptionRow(
-                        icon: Icons.schedule,
-                        title: 'التكرار',
-                        subtitle: _driveFrequency,
-                        onTap: () => _showFrequencyDialog(false),
+                        icon: Icons.folder,
+                        title: 'موقع الحفظ',
+                        subtitle: _localBackupPath.split('/').last,
+                        onTap: _selectLocalBackupPath,
                       ),
                       const Divider(height: 1),
                       _buildOptionRow(
-                        icon: Icons.access_time,
-                        title: 'وقت النسخ',
-                        subtitle: _driveBackupTime.format(context),
-                        onTap: () => _selectTime(false),
+                        icon: Icons.timer,
+                        title: 'تجربة سريعة (30 ثانية)',
+                        subtitle: 'اختبار فوري لنظام النسخ الجديد',
+                        onTap: () async {
+                          await BackgroundBackupService.runQuickTest();
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'تمت الجدولة! انتظر 30 ثانية للإشعار',
+                                ),
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ],
-                  ],
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // قسم Google Drive
+                  _buildSectionTitle(Icons.cloud, 'Google Drive'),
+                  const SizedBox(height: 8),
+
+                  BackupActionButton(
+                    icon: Icons.cloud_upload,
+                    title: 'نسخ احتياطي - Drive',
+                    subtitle: _driveEmail == null
+                        ? 'سجل دخول أولاً'
+                        : 'رفع إلى Drive',
+                    color: const Color(0xFF10B981),
+                    onTap: _performDriveBackup,
+                    isLoading: _isProcessing,
+                  ),
+                  const SizedBox(height: 8),
+                  BackupActionButton(
+                    icon: Icons.cloud_download,
+                    title: 'استعادة من Drive',
+                    subtitle: _driveEmail == null
+                        ? 'سجل دخول أولاً'
+                        : 'تنزيل آخر نسخة',
+                    color: const Color(0xFF8B5CF6),
+                    onTap: _performDriveRestore,
+                    isLoading: _isProcessing,
+                  ),
+
+                  // ملاحظة الخصوصية الجديدة
+                  _buildPrivacyNote(),
+
+                  const SizedBox(height: 10),
+                  _buildOptionsCard(
+                    children: [
+                      if (_driveEmail == null)
+                        _buildOptionRow(
+                          icon: Icons.login,
+                          title: 'تسجيل الدخول',
+                          subtitle: 'مطلوب للنسخ الاحتياطي',
+                          onTap: _showGmailLoginDialog,
+                        ),
+
+                      if (_driveEmail != null) ...[
+                        _buildOptionRow(
+                          icon: Icons.sync,
+                          title: 'نسخ تلقائي',
+                          trailing: Switch(
+                            value: _driveAutoBackup,
+                            onChanged: (value) async {
+                              if (value) {
+                                await BackgroundBackupService.requestNotificationPermission();
+                              }
+                              setState(() => _driveAutoBackup = value);
+                              await _saveSettings();
+                            },
+                            activeColor: Colors.green,
+                          ),
+                        ),
+                        if (_driveAutoBackup) ...[
+                          const Divider(height: 1),
+                          _buildOptionRow(
+                            icon: Icons.schedule,
+                            title: 'التكرار',
+                            subtitle: _driveFrequency,
+                            onTap: () => _showFrequencyDialog(false),
+                          ),
+                          const Divider(height: 1),
+                          _buildOptionRow(
+                            icon: Icons.access_time,
+                            title: 'وقت النسخ',
+                            subtitle: _driveBackupTime.format(context),
+                            onTap: () => _selectTime(false),
+                          ),
+                        ],
+                      ],
+                    ],
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // ملاحظة
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue.shade100),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.blue.shade700,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'جميع النسخ الاحتياطية مشفرة تلقائياً لحماية بياناتك',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.blue.shade800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-
-              const SizedBox(height: 14),
-
-              // ملاحظة
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.shade100),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.info_outline, color: Colors.blue.shade700, size: 16),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'جميع النسخ الاحتياطية مشفرة تلقائياً لحماية بياناتك',
-                        style: TextStyle(fontSize: 10, color: Colors.blue.shade800),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-          
+
           // طبقة التحميل (Overlay)
           // طبقة التحميل (Overlay)
           if (_isProcessing)
@@ -2311,7 +2667,10 @@ class _BackupPageState extends State<BackupPage> {
                   elevation: 8,
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 24,
+                    ),
                     constraints: const BoxConstraints(maxWidth: 280),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
@@ -2324,14 +2683,18 @@ class _BackupPageState extends State<BackupPage> {
                           height: 32,
                           child: CircularProgressIndicator(
                             strokeWidth: 3,
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF3B82F6)),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFF3B82F6),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 24),
                         Text(
-                          _processStatus.isEmpty ? 'جاري العمل...' : _processStatus,
+                          _processStatus.isEmpty
+                              ? 'جاري العمل...'
+                              : _processStatus,
                           style: const TextStyle(
-                            fontSize: 14, 
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF374151), // لون رمادي داكن
                             height: 1.5,
@@ -2398,20 +2761,37 @@ class _BackupPageState extends State<BackupPage> {
                 color: (iconColor ?? Colors.grey).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: Icon(icon, size: 14, color: iconColor ?? Colors.grey.shade700),
+              child: Icon(
+                icon,
+                size: 14,
+                color: iconColor ?? Colors.grey.shade700,
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                   if (subtitle != null)
-                    Text(subtitle, style: TextStyle(fontSize: 9, color: Colors.grey.shade600)),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
                 ],
               ),
             ),
-            trailing ?? Icon(Icons.chevron_left, size: 16, color: Colors.grey.shade400),
+            trailing ??
+                Icon(Icons.chevron_left, size: 16, color: Colors.grey.shade400),
           ],
         ),
       ),

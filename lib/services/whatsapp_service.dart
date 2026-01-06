@@ -1,4 +1,4 @@
-/// WhatsApp Service for Debt Max App
+/// WhatsApp Service for DioMax App
 /// خدمة إرسال رسائل WhatsApp للتذكير بالديون
 library;
 
@@ -65,7 +65,7 @@ class WhatsAppService {
     buffer.writeln();
     buffer.writeln('━━━━━━━━━━━━━━━━━━');
     buffer.writeln('*$senderName*');
-    buffer.writeln('_عبر تطبيق ديوني ماكس_');
+    buffer.writeln('_عبر تطبيق ديوماكس_');
 
     return buffer.toString();
   }

@@ -8,7 +8,7 @@ class DriveBackupService {
 
   static const String _emailKey = 'drive_email';
   static const String _lastBackupKey = 'drive_last_backup';
-  static const String _backupFolderName = 'DebtMaxBackups';
+  static const String _backupFolderName = 'DioMaxBackups';
   
   // Google Sign-In مع صلاحيات Drive
   final GoogleSignIn _googleSignIn = GoogleSignIn(

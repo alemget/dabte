@@ -16,13 +16,15 @@ class DriveBackupService {
 
   static const String _emailKey = 'drive_email';
   static const String _lastBackupKey = 'drive_last_backup';
-  static const String _backupFolderName = 'DebtMaxBackups';
+  static const String _backupFolderName = 'DioMaxBackups';
 
   // Google Sign-In مع صلاحيات Drive
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
       'email',
-      drive.DriveApi.driveFileScope, // صلاحية الوصول للملفات التي أنشأها التطبيق فقط
+      drive
+          .DriveApi
+          .driveFileScope, // صلاحية الوصول للملفات التي أنشأها التطبيق فقط
     ],
   );
 
@@ -162,7 +164,10 @@ class DriveBackupService {
   }
 
   /// رفع نسخة احتياطية إلى Drive
-  Future<DriveBackupResult> uploadBackup(String filePath, {Function(String)? onProgress}) async {
+  Future<DriveBackupResult> uploadBackup(
+    String filePath, {
+    Function(String)? onProgress,
+  }) async {
     try {
       onProgress?.call('جاري التحقق من تسجيل الدخول...');
       // التحقق من تسجيل الدخول
@@ -201,10 +206,7 @@ class DriveBackupService {
 
       // رفع الملف
       final fileContent = await file.readAsBytes();
-      final media = drive.Media(
-        Stream.value(fileContent),
-        fileContent.length,
-      );
+      final media = drive.Media(Stream.value(fileContent), fileContent.length);
 
       final uploadedFile = await _driveApi!.files.create(
         driveFile,
@@ -230,10 +232,7 @@ class DriveBackupService {
       );
     } catch (e) {
       debugPrint('خطأ في رفع النسخة: $e');
-      return DriveBackupResult(
-        success: false,
-        errorMessage: _mapDriveError(e),
-      );
+      return DriveBackupResult(success: false, errorMessage: _mapDriveError(e));
     }
   }
 
@@ -255,12 +254,14 @@ class DriveBackupService {
       if (response.files == null) return [];
 
       return response.files!
-          .map((file) => DriveBackupInfo(
-                id: file.id ?? '',
-                name: file.name ?? 'backup.db',
-                size: int.tryParse(file.size ?? '0') ?? 0,
-                createdTime: file.createdTime,
-              ))
+          .map(
+            (file) => DriveBackupInfo(
+              id: file.id ?? '',
+              name: file.name ?? 'backup.db',
+              size: int.tryParse(file.size ?? '0') ?? 0,
+              createdTime: file.createdTime,
+            ),
+          )
           .toList();
     } catch (e) {
       debugPrint('خطأ في جلب قائمة النسخ: $e');
@@ -269,7 +270,10 @@ class DriveBackupService {
   }
 
   /// تنزيل نسخة احتياطية من Drive
-  Future<String?> downloadBackup({String? fileId, Function(String)? onProgress}) async {
+  Future<String?> downloadBackup({
+    String? fileId,
+    Function(String)? onProgress,
+  }) async {
     try {
       onProgress?.call('جاري الاتصال بـ Google Drive...');
       if (!await ensureSignedIn()) return null;
@@ -285,14 +289,18 @@ class DriveBackupService {
 
       onProgress?.call('جاري تنزيل الملف...');
       // تنزيل الملف
-      final response = await _driveApi!.files.get(
-        targetFileId,
-        downloadOptions: drive.DownloadOptions.fullMedia,
-      ) as drive.Media;
+      final response =
+          await _driveApi!.files.get(
+                targetFileId,
+                downloadOptions: drive.DownloadOptions.fullMedia,
+              )
+              as drive.Media;
 
       // حفظ الملف مؤقتاً
       final tempDir = Directory.systemTemp;
-      final tempFile = File('${tempDir.path}/restore_${DateTime.now().millisecondsSinceEpoch}.db');
+      final tempFile = File(
+        '${tempDir.path}/restore_${DateTime.now().millisecondsSinceEpoch}.db',
+      );
 
       final List<int> bytes = [];
       await for (final chunk in response.stream) {
@@ -349,7 +357,9 @@ class DriveBackupService {
       return 'لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.';
     }
 
-    if (e.contains('UserRecoverableAuthException') || e.contains('401') || e.contains('403')) {
+    if (e.contains('UserRecoverableAuthException') ||
+        e.contains('401') ||
+        e.contains('403')) {
       return 'انتهت صلاحية جلسة الدخول. يرجى تسجيل الدخول مرة أخرى.';
     }
 

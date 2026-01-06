@@ -29,7 +29,8 @@ class ReportsRepositoryImpl implements ReportsRepository {
       final lastDateStr = row['lastTransactionDate'] as String?;
       final dt = lastDateStr != null ? DateTime.tryParse(lastDateStr) : null;
       if (dt != null) {
-        if (lastTransactionDate == null || dt.isAfter(lastTransactionDate!)) {
+        final currentLast = lastTransactionDate;
+        if (currentLast == null || dt.isAfter(currentLast)) {
           lastTransactionDate = dt;
         }
       }
@@ -50,7 +51,8 @@ class ReportsRepositoryImpl implements ReportsRepository {
       }
 
       if (clientLast != null) {
-        if (lastTransactionDate == null || clientLast.isAfter(lastTransactionDate!)) {
+        final currentLast = lastTransactionDate;
+        if (currentLast == null || clientLast.isAfter(currentLast)) {
           lastTransactionDate = clientLast;
         }
       }

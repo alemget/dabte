@@ -12,8 +12,7 @@ Future<void> main() async {
   await bootstrap();
 
   final prefs = await SharedPreferences.getInstance();
-  // final seenIntro = prefs.getBool('seen_intro') ?? false;
-  final seenIntro = false; // Forced false for testing
+  final seenIntro = prefs.getBool('seen_intro') ?? false;
 
   runApp(
     MultiProvider(

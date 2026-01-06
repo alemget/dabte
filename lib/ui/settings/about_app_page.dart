@@ -8,13 +8,10 @@ class AboutAppPage extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('سياسة الخصوصية'),
-          centerTitle: true,
-        ),
+        appBar: AppBar(title: const Text('سياسة الخصوصية'), centerTitle: true),
         body: const Padding(
           padding: EdgeInsets.all(16),
-          child: Text('تطبيق Debt Max - ديوني ماكس لإدارة الديون بينك وبين عملائك.'),
+          child: Text('تطبيق DioMax - ديوماكس لإدارة الديون بينك وبين عملائك.'),
         ),
       ),
     );

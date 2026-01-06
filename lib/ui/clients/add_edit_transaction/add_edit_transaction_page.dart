@@ -26,8 +26,16 @@ class AddEditTransactionPage extends StatefulWidget {
     BuildContext context, {
     Client? initialClient,
     DebtTransaction? transaction,
-  }) {
+  }) async {
     final l10n = AppLocalizations.of(context)!;
+
+    // للديون الجديدة فقط: عرض مربع اختيار النوع أولاً
+    bool? selectedType;
+    if (transaction == null) {
+      selectedType = await DebtTypeSelectorDialog.show(context);
+      if (selectedType == null) return null; // تم الإلغاء
+    }
+
     return showGeneralDialog<bool>(
       context: context,
       barrierDismissible: true,
@@ -48,6 +56,7 @@ class AddEditTransactionPage extends StatefulWidget {
             child: _TransactionDialog(
               initialClient: initialClient,
               transaction: transaction,
+              preSelectedType: selectedType,
             ),
           ),
         );
@@ -70,7 +79,13 @@ class _AddEditTransactionPageState extends State<AddEditTransactionPage> {
 class _TransactionDialog extends StatefulWidget {
   final Client? initialClient;
   final DebtTransaction? transaction;
-  const _TransactionDialog({this.initialClient, this.transaction});
+  final bool? preSelectedType;
+
+  const _TransactionDialog({
+    this.initialClient,
+    this.transaction,
+    this.preSelectedType,
+  });
 
   @override
   State<_TransactionDialog> createState() => _TransactionDialogState();
@@ -106,6 +121,9 @@ class _TransactionDialogState extends State<_TransactionDialog> {
       _selectedDate = widget.transaction!.date;
       _currency = widget.transaction!.currency;
       _isForMe = widget.transaction!.isForMe;
+    } else if (widget.preSelectedType != null) {
+      // استخدام النوع المختار من مربع الحوار
+      _isForMe = widget.preSelectedType!;
     }
     _loadData();
   }
@@ -412,120 +430,133 @@ class _TransactionDialogState extends State<_TransactionDialog> {
                               const SizedBox(height: 16),
 
                               // المبلغ والعملة
-                              Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: surfaceColor,
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: activeColor.withOpacity(0.15),
-                                  ),
-                                ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: TextFormField(
-                                        controller: _amountController,
-                                        keyboardType:
-                                            const TextInputType.numberWithOptions(
-                                              decimal: true,
-                                            ),
-                                        style: TextStyle(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.bold,
-                                          color: activeColor,
-                                        ),
-                                        decoration: InputDecoration(
-                                          hintText: '0',
-                                          hintStyle: TextStyle(
-                                            color: mutedColor.withOpacity(0.4),
-                                            fontSize: 28,
-                                          ),
-                                          border: InputBorder.none,
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.zero,
-                                          labelText: l10n.amount,
-                                          labelStyle: TextStyle(
-                                            fontSize: 12,
-                                            color: mutedColor,
-                                          ),
-                                          floatingLabelBehavior:
-                                              FloatingLabelBehavior.always,
-                                        ),
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter.allow(
-                                            RegExp(r'[0-9.]'),
-                                          ),
-                                        ],
-                                        validator: (v) => v!.isEmpty
-                                            ? l10n.amountRequired
-                                            : null,
-                                      ),
+                              GestureDetector(
+                                onTap: () =>
+                                    _showCalculator(context, activeColor),
+                                child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: surfaceColor,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: activeColor.withOpacity(0.15),
                                     ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 8,
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              l10n.amount,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: mutedColor,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  _amountController.text.isEmpty
+                                                      ? '0'
+                                                      : _amountController.text,
+                                                  style: TextStyle(
+                                                    fontSize: 28,
+                                                    fontWeight: FontWeight.bold,
+                                                    color:
+                                                        _amountController
+                                                            .text
+                                                            .isEmpty
+                                                        ? mutedColor
+                                                              .withOpacity(0.4)
+                                                        : activeColor,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Icon(
+                                                  Icons.calculate_rounded,
+                                                  size: 20,
+                                                  color: mutedColor.withOpacity(
+                                                    0.5,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      decoration: BoxDecoration(
-                                        color: bgColor,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: DropdownButtonHideUnderline(
-                                        child: DropdownButton<String>(
-                                          value: _currency,
-                                          isDense: true,
-                                          icon: Icon(
-                                            Icons.expand_more_rounded,
-                                            size: 18,
-                                            color: mutedColor,
-                                          ),
-                                          dropdownColor: bgColor,
-                                          focusColor: Colors.transparent,
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: bgColor,
                                           borderRadius: BorderRadius.circular(
                                             10,
                                           ),
-                                          underline: const SizedBox.shrink(),
-                                          items: _currencyOptions.map((c) {
-                                            final data = CurrencyData.all
-                                                .firstWhere(
-                                                  (d) => d.code == c.code,
-                                                  orElse: () =>
-                                                      CurrencyData.all.first,
-                                                );
-                                            return DropdownMenuItem(
-                                              value: c.code,
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  CurrencyDisplayHelper.getIcon(
-                                                    c.code,
-                                                    size: 18,
-                                                    showGoldText: false,
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Text(
-                                                    data.getLocalizedName(
-                                                      context,
+                                        ),
+                                        child: DropdownButtonHideUnderline(
+                                          child: DropdownButton<String>(
+                                            value: _currency,
+                                            isDense: true,
+                                            icon: Icon(
+                                              Icons.expand_more_rounded,
+                                              size: 18,
+                                              color: mutedColor,
+                                            ),
+                                            dropdownColor: bgColor,
+                                            focusColor: Colors.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            underline: const SizedBox.shrink(),
+                                            items: _currencyOptions.map((c) {
+                                              final data = CurrencyData.all
+                                                  .firstWhere(
+                                                    (d) => d.code == c.code,
+                                                    orElse: () =>
+                                                        CurrencyData.all.first,
+                                                  );
+                                              return DropdownMenuItem(
+                                                value: c.code,
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    CurrencyDisplayHelper.getIcon(
+                                                      c.code,
+                                                      size: 18,
+                                                      showGoldText: false,
                                                     ),
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: textColor,
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      data.getLocalizedName(
+                                                        context,
+                                                      ),
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: textColor,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          }).toList(),
-                                          onChanged: (v) =>
-                                              setState(() => _currency = v!),
+                                                  ],
+                                                ),
+                                              );
+                                            }).toList(),
+                                            onChanged: (v) =>
+                                                setState(() => _currency = v!),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -761,6 +792,83 @@ class _TransactionDialogState extends State<_TransactionDialog> {
                       },
                     );
                   },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// عرض الآلة الحاسبة في شريط سفلي
+  void _showCalculator(BuildContext context, Color activeColor) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF1A1A2E) : Colors.white;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: bgColor,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // مقبض السحب
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // الآلة الحاسبة
+              CalculatorKeyboard(
+                initialValue: _amountController.text,
+                activeColor: activeColor,
+                onValueChanged: (value) {
+                  setState(() {
+                    _amountController.text = value;
+                  });
+                },
+              ),
+
+              // زر التأكيد
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: activeColor,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      AppLocalizations.of(context)!.confirm,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

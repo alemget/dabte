@@ -1,5 +1,5 @@
 name: dabdt
-description: "تطبيق Debt Max - ديوني ماكس لتسجيل الديون بينك وبين العملاء."
+description: "تطبيق DioMax - ديوماكس لتسجيل الديون بينك وبين العملاء."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -72,6 +72,7 @@ dependencies:
   flutter_native_contact_picker: ^0.0.11
   google_fonts: ^6.3.2
   flutter_animate: ^4.5.2
+  introduction_screen: ^3.1.14
 
 dev_dependencies:
   flutter_test:
@@ -131,7 +132,8 @@ flutter:
 flutter_launcher_icons:
   android: "ic_launcher"
   ios: false
-  image_path: "assets/images/debt.ico"
+  image_path: "assets/icon/app_icon.png"
   min_sdk_android: 21
-  adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "assets/images/debt.ico"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"
+  remove_alpha_ios: true

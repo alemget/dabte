@@ -8,9 +8,9 @@ import '../datasources/local_backup_service.dart';
 import '../datasources/drive_backup_service.dart';
 
 // مهمة النسخ الاحتياطي المحلي
-const String localBackupTask = 'com.debtmax.localBackupTask';
+const String localBackupTask = 'com.diomax.localBackupTask';
 // مهمة النسخ الاحتياطي السحابي
-const String driveBackupTask = 'com.debtmax.driveBackupTask';
+const String driveBackupTask = 'com.diomax.driveBackupTask';
 
 // دالة مستوى أعلى (مطلوبة من WorkManager)
 @pragma('vm:entry-point')
@@ -19,7 +19,9 @@ void callbackDispatcher() {
     try {
       // تهيئة الإشعارات
       final notificationsPlugin = FlutterLocalNotificationsPlugin();
-      const androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
+      const androidSettings = AndroidInitializationSettings(
+        '@mipmap/launcher_icon',
+      );
       const initSettings = InitializationSettings(android: androidSettings);
       await notificationsPlugin.initialize(initSettings);
 
@@ -31,7 +33,9 @@ void callbackDispatcher() {
         importance: Importance.high,
       );
       await notificationsPlugin
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(channel);
 
       if (task == localBackupTask) {
@@ -41,7 +45,9 @@ void callbackDispatcher() {
         await _showNotification(
           notificationsPlugin,
           result.success ? 'تم النسخ الاحتياطي' : 'فشل النسخ الاحتياطي',
-          result.success ? 'تم حفظ نسخة احتياطية بنجاح' : (result.errorMessage ?? 'حدث خطأ'),
+          result.success
+              ? 'تم حفظ نسخة احتياطية بنجاح'
+              : (result.errorMessage ?? 'حدث خطأ'),
         );
 
         // إعادة جدولة المهمة التالية (Recursive)
@@ -73,12 +79,16 @@ void callbackDispatcher() {
           return false;
         }
 
-        final uploadResult = await DriveBackupService.instance.uploadBackup(tempResult.filePath!);
+        final uploadResult = await DriveBackupService.instance.uploadBackup(
+          tempResult.filePath!,
+        );
 
         await _showNotification(
           notificationsPlugin,
           uploadResult.success ? 'تم النسخ إلى Drive' : 'فشل النسخ السحابي',
-          uploadResult.success ? 'تم رفع نسخة احتياطية بنجاح' : (uploadResult.errorMessage ?? 'حدث خطأ'),
+          uploadResult.success
+              ? 'تم رفع نسخة احتياطية بنجاح'
+              : (uploadResult.errorMessage ?? 'حدث خطأ'),
         );
 
         // إعادة جدولة المهمة التالية (Recursive)
@@ -184,7 +194,13 @@ class BackgroundBackupService {
 
     // حساب التأخير حتى الوقت المحدد
     final now = DateTime.now();
-    var scheduledTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    var scheduledTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
+    );
 
     // إذا كان الوقت المحدد قد مضى لليوم، نجدول لليوم التالي
     // أو إذا كان الوقت قريباً جداً (مثلاً أثناء التنفيذ)، ننتقل لغد
@@ -194,7 +210,9 @@ class BackgroundBackupService {
 
     final delay = scheduledTime.difference(now);
 
-    debugPrint('جدولة النسخ المحلي القادم في: $scheduledTime (بعد ${delay.inMinutes} دقيقة)');
+    debugPrint(
+      'جدولة النسخ المحلي القادم في: $scheduledTime (بعد ${delay.inMinutes} دقيقة)',
+    );
 
     // حفظ وقت الجدولة
     final prefs = await SharedPreferences.getInstance();
@@ -220,7 +238,13 @@ class BackgroundBackupService {
     await Workmanager().cancelByUniqueName(driveBackupTask);
 
     final now = DateTime.now();
-    var scheduledTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    var scheduledTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
+    );
 
     if (scheduledTime.isBefore(now)) {
       scheduledTime = scheduledTime.add(const Duration(days: 1));
@@ -228,7 +252,9 @@ class BackgroundBackupService {
 
     final delay = scheduledTime.difference(now);
 
-    debugPrint('جدولة النسخ السحابي القادم في: $scheduledTime (بعد ${delay.inMinutes} دقيقة)');
+    debugPrint(
+      'جدولة النسخ السحابي القادم في: $scheduledTime (بعد ${delay.inMinutes} دقيقة)',
+    );
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('next_drive_backup', scheduledTime.toIso8601String());
@@ -265,7 +291,9 @@ class BackgroundBackupService {
   /// اختبار الإشعارات
   static Future<void> showTestNotification() async {
     final notificationsPlugin = FlutterLocalNotificationsPlugin();
-    const androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/launcher_icon',
+    );
     const initSettings = InitializationSettings(android: androidSettings);
     await notificationsPlugin.initialize(initSettings);
 
@@ -276,7 +304,9 @@ class BackgroundBackupService {
       importance: Importance.high,
     );
     await notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
     await _showNotification(

@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../data/currency_data.dart';
 
 /// Helper class to standardize currency icon display across the app
 class CurrencyDisplayHelper {
+  /// Formats a numeric value with thousand separators and optional decimals
+  static String format(double value, {int fractionDigits = 2}) {
+    final formatter = NumberFormat.decimalPatternDigits(
+      locale: 'en_US',
+      decimalDigits: fractionDigits,
+    );
+    return formatter.format(value);
+  }
+
   /// Returns the appropriate widget for a currency code (Icon, gold bar, or text emoji)
   static Widget getIcon(
     String code, {

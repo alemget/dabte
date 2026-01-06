@@ -1,4 +1,4 @@
-/// Invoice Service for Debt Max App
+/// Invoice Service for DioMax App
 /// خدمة إنشاء ومشاركة فواتير المطالبة
 library;
 
@@ -36,7 +36,7 @@ class InvoiceService {
     // Get profile info for sender details
     final profileInfo = await DebtDatabase.instance.getProfileInfo();
 
-    final senderName = profileInfo?['name'] as String? ?? 'ديوني ماكس';
+    final senderName = profileInfo?['name'] as String? ?? 'ديوماكس';
     final senderPhone = profileInfo?['phone'] as String? ?? '';
     final senderAddress = profileInfo?['address'] as String? ?? '';
     final footer = profileInfo?['footer'] as String? ?? '';
@@ -120,7 +120,7 @@ class InvoiceService {
     // App Signature
     buffer.writeln('─────────────────────────────────────────');
     buffer.writeln('📱 تم إنشاء هذه الفاتورة بواسطة');
-    buffer.writeln('   تطبيق ديوني ماكس - Debt Max');
+    buffer.writeln('   تطبيق ديوماكس - DioMax');
     buffer.writeln('─────────────────────────────────────────');
 
     return buffer.toString();

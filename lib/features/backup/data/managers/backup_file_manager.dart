@@ -13,12 +13,12 @@ class BackupFileManager {
   static final BackupFileManager instance = BackupFileManager._internal();
   BackupFileManager._internal();
 
-  static const String _backupFolderName = 'DebtMaxBackups';
+  static const String _backupFolderName = 'Backups';
   static const String _backupPrefix = 'backup_';
   static const String _backupExtension = '.db';
 
   // قناة للتواصل مع Android native code
-  static const MethodChannel _channel = MethodChannel('debtmax/backup');
+  static const MethodChannel _channel = MethodChannel('diomax/backup');
 
   /// الحصول على إصدار Android SDK
   Future<int> getAndroidSdkVersion() async {
@@ -43,7 +43,9 @@ class BackupFileManager {
         if (sdkVersion >= 29) {
           final externalDir = await getExternalStorageDirectory();
           if (externalDir != null) {
-            final backupDir = Directory(path.join(externalDir.path, _backupFolderName));
+            final backupDir = Directory(
+              path.join(externalDir.path, _backupFolderName),
+            );
             if (!await backupDir.exists()) {
               await backupDir.create(recursive: true);
             }
@@ -54,7 +56,9 @@ class BackupFileManager {
         // Android 9 وأقل: يمكن استخدام التخزين الخارجي
         final externalDir = await getExternalStorageDirectory();
         if (externalDir != null) {
-          final backupDir = Directory(path.join(externalDir.path, _backupFolderName));
+          final backupDir = Directory(
+            path.join(externalDir.path, _backupFolderName),
+          );
           if (!await backupDir.exists()) {
             await backupDir.create(recursive: true);
           }
@@ -64,7 +68,9 @@ class BackupFileManager {
 
       // Fallback: مجلد المستندات
       final documentsDir = await getApplicationDocumentsDirectory();
-      final backupDir = Directory(path.join(documentsDir.path, _backupFolderName));
+      final backupDir = Directory(
+        path.join(documentsDir.path, _backupFolderName),
+      );
       if (!await backupDir.exists()) {
         await backupDir.create(recursive: true);
       }
@@ -82,7 +88,9 @@ class BackupFileManager {
       if (Platform.isAndroid) {
         // مسار مجلد Downloads على Android
         const downloadsPath = '/storage/emulated/0/Download';
-        final backupDir = Directory(path.join(downloadsPath, _backupFolderName));
+        final backupDir = Directory(
+          path.join(downloadsPath, _backupFolderName),
+        );
 
         try {
           if (!await backupDir.exists()) {
@@ -99,7 +107,9 @@ class BackupFileManager {
             final baseIndex = parts.indexOf('Android');
             if (baseIndex > 0) {
               final basePath = parts.sublist(0, baseIndex).join('/');
-              final altDownloadsDir = Directory(path.join(basePath, 'Download', _backupFolderName));
+              final altDownloadsDir = Directory(
+                path.join(basePath, 'Download', _backupFolderName),
+              );
               try {
                 if (!await altDownloadsDir.exists()) {
                   await altDownloadsDir.create(recursive: true);
@@ -185,12 +195,14 @@ class BackupFileManager {
             if (_isBackupFile(fileName)) {
               try {
                 final stat = await entity.stat();
-                backups.add(BackupMetadata.fromFile(
-                  fileName: fileName,
-                  filePath: entity.path,
-                  fileSize: stat.size,
-                  createdAt: stat.modified,
-                ));
+                backups.add(
+                  BackupMetadata.fromFile(
+                    fileName: fileName,
+                    filePath: entity.path,
+                    fileSize: stat.size,
+                    createdAt: stat.modified,
+                  ),
+                );
               } catch (e) {
                 debugPrint('خطأ في قراءة معلومات الملف: $e');
               }
@@ -201,8 +213,11 @@ class BackupFileManager {
 
       // البحث في مجلد Documents أيضاً
       final documentsDir = await getApplicationDocumentsDirectory();
-      final docsBackupDir = Directory(path.join(documentsDir.path, _backupFolderName));
-      if (await docsBackupDir.exists() && docsBackupDir.path != backupDir.path) {
+      final docsBackupDir = Directory(
+        path.join(documentsDir.path, _backupFolderName),
+      );
+      if (await docsBackupDir.exists() &&
+          docsBackupDir.path != backupDir.path) {
         final files = await docsBackupDir.list().toList();
 
         for (final entity in files) {
@@ -213,12 +228,14 @@ class BackupFileManager {
                 final stat = await entity.stat();
                 // تجنب التكرار
                 if (!backups.any((b) => b.fileName == fileName)) {
-                  backups.add(BackupMetadata.fromFile(
-                    fileName: fileName,
-                    filePath: entity.path,
-                    fileSize: stat.size,
-                    createdAt: stat.modified,
-                  ));
+                  backups.add(
+                    BackupMetadata.fromFile(
+                      fileName: fileName,
+                      filePath: entity.path,
+                      fileSize: stat.size,
+                      createdAt: stat.modified,
+                    ),
+                  );
                 }
               } catch (e) {
                 print('خطأ في قراءة معلومات الملف: $e');
@@ -239,7 +256,8 @@ class BackupFileManager {
 
   /// التحقق من أن الملف هو نسخة احتياطية
   bool _isBackupFile(String fileName) {
-    return fileName.startsWith(_backupPrefix) && (fileName.endsWith('.db') || fileName.endsWith('.dbk'));
+    return fileName.startsWith(_backupPrefix) &&
+        (fileName.endsWith('.db') || fileName.endsWith('.dbk'));
   }
 
   /// حذف نسخة احتياطية
@@ -277,7 +295,11 @@ class BackupFileManager {
           if (externalDir != null) {
             // الصعود للمجلد الرئيسي للتطبيق
             final appDir = externalDir.parent.parent.parent.parent;
-            final downloadsPath = path.join(appDir.path, 'Download', _backupFolderName);
+            final downloadsPath = path.join(
+              appDir.path,
+              'Download',
+              _backupFolderName,
+            );
             final downloadsDir = Directory(downloadsPath);
 
             try {

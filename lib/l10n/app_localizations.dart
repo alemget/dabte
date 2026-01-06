@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// عنوان التطبيق
   ///
   /// In ar, this message translates to:
-  /// **'ديوني ماكس'**
+  /// **'ديوماكس'**
   String get appTitle;
 
   /// No description provided for @home.

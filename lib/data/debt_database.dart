@@ -1,4 +1,4 @@
-// SQLite database helper for "Debt Max - ديوني ماكس" app
+// SQLite database helper for "DioMax - ديوماكس" app
 
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -69,11 +69,21 @@ class DebtDatabase {
         ''');
 
         // Create indexes for performance
-        await db.execute('CREATE INDEX idx_transactions_clientId ON transactions(clientId)');
-        await db.execute('CREATE INDEX idx_transactions_currency ON transactions(currency)');
-        await db.execute('CREATE INDEX idx_transactions_date ON transactions(date DESC)');
-        await db.execute('CREATE INDEX idx_clients_name ON clients(name COLLATE NOCASE)');
-        await db.execute('CREATE INDEX idx_transactions_composite ON transactions(clientId, isForMe, currency)');
+        await db.execute(
+          'CREATE INDEX idx_transactions_clientId ON transactions(clientId)',
+        );
+        await db.execute(
+          'CREATE INDEX idx_transactions_currency ON transactions(currency)',
+        );
+        await db.execute(
+          'CREATE INDEX idx_transactions_date ON transactions(date DESC)',
+        );
+        await db.execute(
+          'CREATE INDEX idx_clients_name ON clients(name COLLATE NOCASE)',
+        );
+        await db.execute(
+          'CREATE INDEX idx_transactions_composite ON transactions(clientId, isForMe, currency)',
+        );
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -94,19 +104,34 @@ class DebtDatabase {
           await db.execute('ALTER TABLE clients ADD COLUMN createdAt TEXT');
           // Set createdAt for existing clients to current time
           final now = DateTime.now().toIso8601String();
-          await db.execute('UPDATE clients SET createdAt = ? WHERE createdAt IS NULL', [now]);
+          await db.execute(
+            'UPDATE clients SET createdAt = ? WHERE createdAt IS NULL',
+            [now],
+          );
         }
         if (oldVersion < 5) {
           // Add indexes for performance optimization
-          await db.execute('CREATE INDEX IF NOT EXISTS idx_transactions_clientId ON transactions(clientId)');
-          await db.execute('CREATE INDEX IF NOT EXISTS idx_transactions_currency ON transactions(currency)');
-          await db.execute('CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date DESC)');
-          await db.execute('CREATE INDEX IF NOT EXISTS idx_clients_name ON clients(name COLLATE NOCASE)');
-          await db.execute('CREATE INDEX IF NOT EXISTS idx_transactions_composite ON transactions(clientId, isForMe, currency)');
+          await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_transactions_clientId ON transactions(clientId)',
+          );
+          await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_transactions_currency ON transactions(currency)',
+          );
+          await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date DESC)',
+          );
+          await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_clients_name ON clients(name COLLATE NOCASE)',
+          );
+          await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_transactions_composite ON transactions(clientId, isForMe, currency)',
+          );
         }
         if (oldVersion < 6) {
           // إضافة عمود تذكير السداد
-          await db.execute('ALTER TABLE transactions ADD COLUMN reminderDate TEXT');
+          await db.execute(
+            'ALTER TABLE transactions ADD COLUMN reminderDate TEXT',
+          );
         }
       },
     );
@@ -115,7 +140,7 @@ class DebtDatabase {
   Future<int> insertClient(String name, {String? phone}) async {
     final db = await database;
     return db.insert('clients', {
-      'name': name, 
+      'name': name,
       'phone': phone,
       'createdAt': DateTime.now().toIso8601String(),
     });
@@ -135,7 +160,12 @@ class DebtDatabase {
 
   Future<int> updateClient(int id, String name, {String? phone}) async {
     final db = await database;
-    return db.update('clients', {'name': name, 'phone': phone}, where: 'id = ?', whereArgs: [id]);
+    return db.update(
+      'clients',
+      {'name': name, 'phone': phone},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<int> insertTransaction(DebtTransaction tx) async {
@@ -150,7 +180,12 @@ class DebtDatabase {
 
   Future<int> updateTransaction(DebtTransaction tx) async {
     final db = await database;
-    return db.update('transactions', tx.toMap(), where: 'id = ?', whereArgs: [tx.id]);
+    return db.update(
+      'transactions',
+      tx.toMap(),
+      where: 'id = ?',
+      whereArgs: [tx.id],
+    );
   }
 
   Future<bool> hasTransactionsWithCurrency({required String name}) async {
@@ -199,8 +234,7 @@ class DebtDatabase {
 
     return {'forMe': forMe, 'onMe': onMe};
   }
-  
-  
+
   // Profile Info Methods
   Future<Map<String, dynamic>?> getProfileInfo() async {
     final db = await database;
@@ -225,11 +259,11 @@ class DebtDatabase {
       'address': address,
       'footer': footer,
     };
-    
+
     // Using conflict algorithm to insert or update
     await db.insert(
-      'profile_info', 
-      data, 
+      'profile_info',
+      data,
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
@@ -238,7 +272,7 @@ class DebtDatabase {
   /// This replaces the N+1 query problem where we had to query each client separately
   Future<Map<int, Map<String, dynamic>>> getAllClientsSummaries() async {
     final db = await database;
-    
+
     // Single optimized query with JOIN and GROUP BY
     final result = await db.rawQuery('''
       SELECT 
@@ -256,17 +290,17 @@ class DebtDatabase {
       GROUP BY c.id, t.currency, t.isForMe
       ORDER BY c.name
     ''');
-    
+
     // Process results into structured format
     final Map<int, Map<String, dynamic>> summaries = {};
-    
+
     for (final row in result) {
       final clientId = row['clientId'] as int;
       final currency = row['currency'] as String?;
       final isForMe = (row['isForMe'] as int?) == 1;
       final total = (row['total'] as num?)?.toDouble() ?? 0;
       final lastDate = row['lastTransactionDate'] as String?;
-      
+
       // Initialize client entry if not exists
       if (!summaries.containsKey(clientId)) {
         summaries[clientId] = {
@@ -278,23 +312,25 @@ class DebtDatabase {
           'lastTransactionDate': null,
         };
       }
-      
+
       // Update last transaction date
       if (lastDate != null) {
-        final currentLast = summaries[clientId]!['lastTransactionDate'] as String?;
+        final currentLast =
+            summaries[clientId]!['lastTransactionDate'] as String?;
         if (currentLast == null || lastDate.compareTo(currentLast) > 0) {
           summaries[clientId]!['lastTransactionDate'] = lastDate;
         }
       }
-      
+
       // Calculate net balance per currency
       if (currency != null && total > 0) {
-        final netByCurrency = summaries[clientId]!['netByCurrency'] as Map<String, double>;
+        final netByCurrency =
+            summaries[clientId]!['netByCurrency'] as Map<String, double>;
         final currentNet = netByCurrency[currency] ?? 0;
         netByCurrency[currency] = currentNet + (isForMe ? total : -total);
       }
     }
-    
+
     return summaries;
   }
 

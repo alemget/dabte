@@ -87,12 +87,76 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // الخلفية الملونة
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/onboarding_bg.jpg',
-              fit: BoxFit.cover,
-            ),
+          // الخلفية
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            child: _currentPage == 0
+                ? Container(
+                    key: const ValueKey('welcome_bg'),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFF0F0C29), // بنفسجي غامق جداً
+                          Color(0xFF302B63), // نيلي غامق
+                          Color(0xFF24243E), // كحلي غامق
+                        ],
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        // تأثيرات ضبابية لخلق الغموض
+                        Positioned(
+                          top: -100,
+                          right: -100,
+                          child: ImageFiltered(
+                            imageFilter: ImageFilter.blur(
+                              sigmaX: 80,
+                              sigmaY: 80,
+                            ),
+                            child: Container(
+                              width: 300,
+                              height: 300,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(
+                                  0xFF00D4FF,
+                                ).withOpacity(0.15),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: -50,
+                          left: -50,
+                          child: ImageFiltered(
+                            imageFilter: ImageFilter.blur(
+                              sigmaX: 80,
+                              sigmaY: 80,
+                            ),
+                            child: Container(
+                              width: 250,
+                              height: 250,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(
+                                  0xFFFF00CC,
+                                ).withOpacity(0.15), // ماجنتا
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Image.asset(
+                    'assets/images/onboarding_bg.jpg',
+                    key: const ValueKey('standard_bg'),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
           ),
 
           // المحتوى الرئيسي
@@ -143,49 +207,56 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           // زر تخطي
           TextButton(
             onPressed: widget.onFinished,
-            child: const Text(
+            child: Text(
               'تخطي',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.white.withOpacity(_currentPage == 0 ? 0.7 : 1.0),
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
-          // أيقونة التطبيق
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                'assets/icon/app_icon.png',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.orange.shade400, Colors.pink.shade400],
+          // أيقونة التطبيق (تختفي في الصفحة الأولى لأنها موجودة في الوسط)
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: _currentPage == 0 ? 0.0 : 1.0,
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'assets/icon/app_icon.png',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.orange.shade400,
+                            Colors.pink.shade400,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.account_balance_wallet,
-                      color: Colors.white,
-                      size: 30,
-                    ),
-                  );
-                },
+                      child: const Icon(
+                        Icons.account_balance_wallet,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -194,179 +265,137 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  /// بناء صفحة الترحيب الرئيسية مع الشعار
+  /// بناء صفحة الترحيب الرئيسية بتصميم مبتكر وغامض
   Widget _buildWelcomePage(OnboardingPageData data) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // شعار التطبيق الكبير
-          Container(
-            width: 140,
-            height: 140,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 25,
-                  offset: const Offset(0, 10),
-                ),
-                BoxShadow(
-                  color: Colors.white.withOpacity(0.1),
-                  blurRadius: 15,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Image.asset(
-                'assets/icon/app_icon.png',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Colors.orange.shade400, Colors.pink.shade400],
-                      ),
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    child: const Icon(
-                      Icons.account_balance_wallet,
-                      color: Colors.white,
-                      size: 70,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          const SizedBox(height: 40),
-
-          // الحاوية الشفافة (Glassmorphism) مع النص
-          ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 28,
-                  vertical: 32,
-                ),
+          // شعار التطبيق بتصميم متوهج ومثير
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              // هالة خلفية متوهجة
+              Container(
+                width: 160,
+                height: 160,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.2),
-                    width: 1.5,
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(0xFF00D4FF).withOpacity(0.4),
+                      const Color(0xFFFF00CC).withOpacity(0.1),
+                      Colors.transparent,
+                    ],
                   ),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // عنوان الترحيب المخصص
-                    Column(
-                      children: [
-                        // "مرحباً بك في" بخط صغير ولون مختلف
-                        Text(
-                          'مرحباً بك في',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white.withOpacity(0.8),
-                            height: 1.3,
-                            fontFamily: 'Cairo',
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        // "ديون ماكس" بلونين احترافيين وخط كبير
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // "ديون" بلون أزرق/سماوي احترافي
-                            ShaderMask(
-                              shaderCallback: (bounds) => const LinearGradient(
-                                colors: [
-                                  Color(0xFF00D4FF), // أزرق سماوي فاتح
-                                  Color(0xFF0099CC), // أزرق سماوي
-                                ],
-                              ).createShader(bounds),
-                              child: const Text(
-                                'ديون',
-                                style: TextStyle(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                  height: 1.1,
-                                  fontFamily: 'Cairo',
-                                  letterSpacing: -1,
-                                ),
-                              ),
-                            ),
-                            // "ماكس" بلون ذهبي/برتقالي احترافي
-                            ShaderMask(
-                              shaderCallback: (bounds) => const LinearGradient(
-                                colors: [
-                                  Color(0xFFFFD700), // ذهبي
-                                  Color(0xFFFF8C00), // برتقالي
-                                  Color(0xFFFF6347), // أحمر برتقالي
-                                ],
-                              ).createShader(bounds),
-                              child: const Text(
-                                'ماكس',
-                                style: TextStyle(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                  height: 1.1,
-                                  fontFamily: 'Cairo',
-                                  letterSpacing: -1,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-
-                    // خط فاصل أنيق
-                    Container(
-                      width: 60,
-                      height: 3,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.white.withOpacity(0.1),
-                            Colors.white.withOpacity(0.6),
-                            Colors.white.withOpacity(0.1),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // الوصف الملهم
-                    Text(
-                      data.description,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.white.withOpacity(0.95),
-                        height: 1.7,
-                        fontFamily: 'Cairo',
-                      ),
+              ),
+              // الحاوية الرئيسية للشعار
+              Container(
+                width: 130,
+                height: 130,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(35),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.white.withOpacity(0.1),
+                      Colors.white.withOpacity(0.05),
+                    ],
+                  ),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.2),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF00D4FF).withOpacity(0.2),
+                      blurRadius: 30,
+                      spreadRadius: -5,
                     ),
                   ],
                 ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(35),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Image.asset(
+                        'assets/icon/app_icon.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 50),
+
+          // النصوص بتصميم مبتكر
+          Column(
+            children: [
+              Text(
+                'مرحباً بك في عالم',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w300,
+                  color: const Color(0xFF00D4FF), // تركواز مشع
+                  letterSpacing: 4,
+                  fontFamily: 'Cairo',
+                ),
+              ),
+              const SizedBox(height: 12),
+              // اسم التطبيق بتدرج لوني مبتكر
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [
+                    Color(0xFF00D4FF), // تركواز
+                    Color(0xFFBC13FE), // بنفسجي كهربائي
+                    Color(0xFFFF00CC), // ماجنتا
+                  ],
+                  stops: [0.0, 0.5, 1.0],
+                ).createShader(bounds),
+                child: const Text(
+                  'ديوماكس',
+                  style: TextStyle(
+                    fontSize: 56,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    height: 1.0,
+                    fontFamily: 'Cairo',
+                    letterSpacing: -2,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 40),
+
+          // الوصف
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              data.description,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.white.withOpacity(0.8),
+                height: 1.8,
+                fontFamily: 'Cairo',
+                fontWeight: FontWeight.w300,
+                // ظلال ناعمة للنص لتحسين القراءة
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
             ),
           ),

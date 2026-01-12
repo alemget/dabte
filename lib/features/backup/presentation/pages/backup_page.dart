@@ -84,7 +84,7 @@ class _BackupPageState extends State<BackupPage> {
 
       _driveAutoBackup = prefs.getBool('drive_auto_backup') ?? false;
       _driveFrequency = prefs.getString('drive_frequency') ?? 'يومياً';
-      _lastDriveBackup = prefs.getString('last_drive_backup');
+      _lastDriveBackup = prefs.getString('drive_last_backup');
 
       _localBackupTime = TimeOfDay(
         hour: prefs.getInt('local_backup_hour') ?? 2,
@@ -114,13 +114,19 @@ class _BackupPageState extends State<BackupPage> {
 
     // تحديث الجدولة في الخلفية
     if (_localAutoBackup) {
-      await BackgroundBackupService.scheduleLocalBackup(_localBackupTime);
+      await BackgroundBackupService.scheduleLocalBackup(
+        _localBackupTime,
+        frequency: _localFrequency,
+      );
     } else {
       await BackgroundBackupService.cancelLocalBackup();
     }
 
     if (_driveAutoBackup) {
-      await BackgroundBackupService.scheduleDriveBackup(_driveBackupTime);
+      await BackgroundBackupService.scheduleDriveBackup(
+        _driveBackupTime,
+        frequency: _driveFrequency,
+      );
     } else {
       await BackgroundBackupService.cancelDriveBackup();
     }

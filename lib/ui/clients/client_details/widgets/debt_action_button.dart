@@ -82,7 +82,7 @@ class _DebtActionButtonState extends State<DebtActionButton> {
 
     // Now send WhatsApp
     final profileInfo = await DebtDatabase.instance.getProfileInfo();
-    final senderName = profileInfo?['name'] as String? ?? 'ديوني ماكس';
+    final senderName = profileInfo?['name'] as String? ?? 'ديوماكس';
 
     final result = await WhatsAppService.instance.sendDebtReminder(
       phone: _currentClient.phone,

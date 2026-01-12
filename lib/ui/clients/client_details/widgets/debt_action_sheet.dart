@@ -42,7 +42,7 @@ class DebtActionSheet extends StatelessWidget {
 
     // Get sender name from profile
     final profileInfo = await DebtDatabase.instance.getProfileInfo();
-    final senderName = profileInfo?['name'] as String? ?? 'ديوني ماكس';
+    final senderName = profileInfo?['name'] as String? ?? ' ماكس';
 
     final result = await WhatsAppService.instance.sendDebtReminder(
       phone: client.phone,
@@ -221,7 +221,7 @@ class DebtActionSheet extends StatelessWidget {
 
       // Get sender name from profile
       final profileInfo = await DebtDatabase.instance.getProfileInfo();
-      final senderName = profileInfo?['name'] as String? ?? 'ديوني ماكس';
+      final senderName = profileInfo?['name'] as String? ?? 'ديوماكس';
 
       // Now send WhatsApp with the new phone
       await WhatsAppService.instance.sendDebtReminder(
@@ -321,7 +321,9 @@ class DebtActionSheet extends StatelessWidget {
                         const SizedBox(height: 4),
                         MoneyAmount(
                           amount: transaction.amount,
-                          currencyCode: CurrencyData.normalizeCode(transaction.currency),
+                          currencyCode: CurrencyData.normalizeCode(
+                            transaction.currency,
+                          ),
                           fractionDigits: 2,
                           showIcon: true,
                           showCode: true,

@@ -147,6 +147,38 @@ class BackgroundBackupService {
     );
   }
 
+  static DateTime _computeNextScheduledTime({
+    required DateTime now,
+    required TimeOfDay time,
+    required String frequency,
+  }) {
+    var scheduledTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
+    );
+
+    if (scheduledTime.isBefore(now)) {
+      if (frequency == 'أسبوعياً') {
+        scheduledTime = scheduledTime.add(const Duration(days: 7));
+      } else if (frequency == 'شهرياً') {
+        scheduledTime = DateTime(
+          scheduledTime.year,
+          scheduledTime.month + 1,
+          scheduledTime.day,
+          scheduledTime.hour,
+          scheduledTime.minute,
+        );
+      } else {
+        scheduledTime = scheduledTime.add(const Duration(days: 1));
+      }
+    }
+
+    return scheduledTime;
+  }
+
   static Future<void> requestNotificationPermission() async {
     final status = await Permission.notification.status;
     if (status.isDenied) {
@@ -172,8 +204,12 @@ class BackgroundBackupService {
 
     final hour = prefs.getInt('local_backup_hour') ?? 2;
     final minute = prefs.getInt('local_backup_minute') ?? 0;
+    final frequency = prefs.getString('local_frequency') ?? 'يومياً';
 
-    await scheduleLocalBackup(TimeOfDay(hour: hour, minute: minute));
+    await scheduleLocalBackup(
+      TimeOfDay(hour: hour, minute: minute),
+      frequency: frequency,
+    );
   }
 
   /// إعادة جدولة النسخ السحابي (يستدعى من الخلفية)
@@ -183,35 +219,35 @@ class BackgroundBackupService {
 
     final hour = prefs.getInt('drive_backup_hour') ?? 3;
     final minute = prefs.getInt('drive_backup_minute') ?? 0;
+    final frequency = prefs.getString('drive_frequency') ?? 'يومياً';
 
-    await scheduleDriveBackup(TimeOfDay(hour: hour, minute: minute));
+    await scheduleDriveBackup(
+      TimeOfDay(hour: hour, minute: minute),
+      frequency: frequency,
+    );
   }
 
   /// جدولة النسخ الاحتياطي المحلي اليومي
-  static Future<void> scheduleLocalBackup(TimeOfDay time) async {
+  static Future<void> scheduleLocalBackup(
+    TimeOfDay time, {
+    String frequency = 'يومياً',
+  }) async {
     // إلغاء أي مهمة سابقة بنفس الاسم لضمان عدم التكرار
     await Workmanager().cancelByUniqueName(localBackupTask);
 
     // حساب التأخير حتى الوقت المحدد
     final now = DateTime.now();
-    var scheduledTime = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      time.hour,
-      time.minute,
-    );
 
-    // إذا كان الوقت المحدد قد مضى لليوم، نجدول لليوم التالي
-    // أو إذا كان الوقت قريباً جداً (مثلاً أثناء التنفيذ)، ننتقل لغد
-    if (scheduledTime.isBefore(now)) {
-      scheduledTime = scheduledTime.add(const Duration(days: 1));
-    }
+    final scheduledTime = _computeNextScheduledTime(
+      now: now,
+      time: time,
+      frequency: frequency,
+    );
 
     final delay = scheduledTime.difference(now);
 
     debugPrint(
-      'جدولة النسخ المحلي القادم في: $scheduledTime (بعد ${delay.inMinutes} دقيقة)',
+      'جدولة النسخ المحلي القادم في: $scheduledTime (بعد ${delay.inMinutes} دقيقة) - $frequency',
     );
 
     // حفظ وقت الجدولة
@@ -234,26 +270,24 @@ class BackgroundBackupService {
   }
 
   /// جدولة النسخ الاحتياطي السحابي اليومي
-  static Future<void> scheduleDriveBackup(TimeOfDay time) async {
+  static Future<void> scheduleDriveBackup(
+    TimeOfDay time, {
+    String frequency = 'يومياً',
+  }) async {
     await Workmanager().cancelByUniqueName(driveBackupTask);
 
     final now = DateTime.now();
-    var scheduledTime = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      time.hour,
-      time.minute,
-    );
 
-    if (scheduledTime.isBefore(now)) {
-      scheduledTime = scheduledTime.add(const Duration(days: 1));
-    }
+    final scheduledTime = _computeNextScheduledTime(
+      now: now,
+      time: time,
+      frequency: frequency,
+    );
 
     final delay = scheduledTime.difference(now);
 
     debugPrint(
-      'جدولة النسخ السحابي القادم في: $scheduledTime (بعد ${delay.inMinutes} دقيقة)',
+      'جدولة النسخ السحابي القادم في: $scheduledTime (بعد ${delay.inMinutes} دقيقة) - $frequency',
     );
 
     final prefs = await SharedPreferences.getInstance();

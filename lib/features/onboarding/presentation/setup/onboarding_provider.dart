@@ -11,9 +11,6 @@ class OnboardingProvider extends ChangeNotifier {
   int _currentPage = 0;
   int get currentPage => _currentPage;
 
-  bool _verseReady = false;
-  bool get verseReady => _verseReady;
-
   bool _nameReady = false;
   bool get nameReady => _nameReady;
 
@@ -21,9 +18,8 @@ class OnboardingProvider extends ChangeNotifier {
   bool get currencyReady => _currencyReady;
 
   bool get canSwipe {
-    if (_currentPage == 0) return _verseReady;
-    if (_currentPage == 1) return _nameReady;
-    if (_currentPage == 2) return _currencyReady;
+    if (_currentPage == 0) return _nameReady;
+    if (_currentPage == 1) return _currencyReady;
     return false;
   }
 
@@ -36,6 +32,9 @@ class OnboardingProvider extends ChangeNotifier {
   String _userName = '';
   String get userName => _userName;
 
+  final List<AppCurrency> _secondaryCurrencies = [];
+  List<AppCurrency> get secondaryCurrencies => _secondaryCurrencies;
+
   OnboardingProvider() {
     _availableCurrencies = CurrencyData.all.map((option) {
       return AppCurrency(
@@ -46,15 +45,44 @@ class OnboardingProvider extends ChangeNotifier {
         isLocal: false,
       );
     }).toList();
+
+    // تحميل البيانات المحفوظة مسبقاً (إن وجدت)
+    _loadSavedData();
+  }
+
+  /// تحميل البيانات من قاعدة البيانات إذا كانت موجودة
+  Future<void> _loadSavedData() async {
+    try {
+      final data = await _repository.loadSavedData();
+
+      final savedName = data['userName'] as String? ?? '';
+      final savedPrimary = data['primaryCurrency'] as AppCurrency?;
+      final savedSecondary =
+          data['secondaryCurrencies'] as List<AppCurrency>? ?? [];
+
+      if (savedName.isNotEmpty) {
+        _userName = savedName;
+        _nameReady = true;
+      }
+
+      if (savedPrimary != null) {
+        _primaryCurrency = savedPrimary;
+        _currencyReady = true;
+      }
+
+      if (savedSecondary.isNotEmpty) {
+        _secondaryCurrencies.addAll(savedSecondary);
+      }
+
+      notifyListeners();
+    } catch (e) {
+      // في حالة وجود خطأ، نتجاهله ونبدأ من الصفر
+      debugPrint('OnboardingProvider: Failed to load saved data: $e');
+    }
   }
 
   void onPageChanged(int page) {
     _currentPage = page;
-    notifyListeners();
-  }
-
-  void setVerseReady(bool ready) {
-    _verseReady = ready;
     notifyListeners();
   }
 
@@ -78,6 +106,27 @@ class OnboardingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addSecondaryCurrency(AppCurrency currency) {
+    if (!_secondaryCurrencies.any((c) => c.code == currency.code) &&
+        _primaryCurrency?.code != currency.code) {
+      _secondaryCurrencies.add(currency);
+      notifyListeners();
+    }
+  }
+
+  void removeSecondaryCurrency(String code) {
+    _secondaryCurrencies.removeWhere((c) => c.code == code);
+    notifyListeners();
+  }
+
+  /// استبدال العملة الفرعية المختارة بعملة جديدة (عملة فرعية واحدة فقط في التهيئة)
+  void replaceSecondaryCurrency(AppCurrency currency) {
+    if (_primaryCurrency?.code == currency.code) return;
+    _secondaryCurrencies.clear();
+    _secondaryCurrencies.add(currency);
+    notifyListeners();
+  }
+
   Future<void> complete() async {
     final currency = _primaryCurrency;
     if (currency == null) return;
@@ -85,6 +134,7 @@ class OnboardingProvider extends ChangeNotifier {
     await _repository.markCompleted(
       userName: _userName,
       primaryCurrency: currency,
+      secondaryCurrencies: _secondaryCurrencies,
     );
   }
 

@@ -35,14 +35,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     OnboardingPageData(
       title: 'مرحباً بك في\nديوماكس',
       description:
-          'هل يمكن للجمال أن يكون ذكياً؟ ديوماكس وُجد ليجيب. كل بكسل هنا مدروس، كل حركة لها معنى، وكل أداة وُضعت لتكون امتداداً طبيعياً ليدك وتفكيرك. تجربة غامضة بسلاستها، ومدهشة بذكائها. أنت لا تستخدم تطبيقاً.. أنت تعيش تجربة ديوماكس.',
+          'ديوماكس هو تطبيق عصري واحترافي لتسجيل الديون، صُمم ليمنحك تجربة مالية دقيقة وسهلة.\nهيا بنا لنتعرف على مزايا التطبيق.',
       icon: Icons.rocket_launch,
       isWelcomePage: true,
     ),
     OnboardingPageData(
       title: 'سهولة الاستخدام',
       description:
-          'إبداع في البساطة وقوة في الأداء. واجهة ذكية صُممت خصيصاً لتتناغم مع حركتك، حيث كل عنصر ومسافة ولون خضع لدراسة دقيقة ليمنحك تجربة استخدام فائقة السلاسة والسرعة',
+          'واجهة لم تُصمم فحسب، بل دُرست بعناية لتناسب سيكولوجية الألوان وحركة الأصابع الطبيعية. تناغم بصري وحسي  يريح العين والعقل، حيث كل عنصر وضع بعناية لتجربة استثنائية في البساطة،.',
       icon: Icons.auto_awesome,
     ),
     OnboardingPageData(
@@ -54,14 +54,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     OnboardingPageData(
       title: 'مجاني بالكامل',
       description:
-          'قل وداعاً للاشتراكات الشهرية والإعلانات المزعجة التي تسرق تركيزك. استمتع بتجربة مجانية 100%، نظيفة، وكاملة المزايا. نعم، إنه ديوماكس يا صديقي!',
+          'قل وداعاً للاشتراكات الشهرية والإعلانات المزعجة التي تسرق تركيزك. استمتع بتجربة مجانية، نظيفة، وكاملة المزايا. نعم، إنه ديوماكس يا صديقي!',
       icon: Icons.card_giftcard,
     ),
     OnboardingPageData(
-      title: 'التكامل والمرونة',
+      title: 'التكامل والدعم',
       description:
-          'صُمم ليدهشك! يتحدث لغتك، يدعم عملتك، وينبهك لكل صغيرة وكبيرة بذكاء فائق. تجربة متكاملة ستجعلك تتساءل: كيف كانت حياتي المالية قبله؟',
-      icon: Icons.bolt,
+          'أكثر من مجرد تطبيق.\nمنظومة متكاملة من المزايا الذكية التي تخدمك، مدعومة بفريق دعم فني متفانٍ لضمان استمرارية أعمالك بلا توقف. نحن هنا لنجعل تجربتك مثالية، حتى تتساءل: كيف كانت حياتي المالية قبله؟',
+      icon: Icons.headset_mic,
     ),
   ];
 
@@ -389,6 +389,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
               child: Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.55,
+                alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 40,

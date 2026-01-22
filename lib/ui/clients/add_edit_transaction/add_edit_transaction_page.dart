@@ -168,11 +168,7 @@ class _TransactionPageState extends State<_TransactionPage>
 
     List<CurrencyOption> currencies;
     if (raw == null) {
-      currencies = const [
-        CurrencyOption(code: 'YER', isLocal: true),
-        CurrencyOption(code: 'SAR', isLocal: false),
-        CurrencyOption(code: 'USD', isLocal: false),
-      ];
+      currencies = const [];
     } else {
       final decoded = jsonDecode(raw) as List<dynamic>;
       currencies = decoded

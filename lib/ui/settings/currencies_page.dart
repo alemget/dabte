@@ -31,31 +31,7 @@ class _CurrenciesPageState extends State<CurrenciesPage> {
 
     List<_Currency> list;
     if (raw == null) {
-      // ثلاث عملات افتراضية: يمني (محلي)، سعودي، دولار
-      // ثلاث عملات افتراضية: يمني (محلي)، سعودي، دولار
-      list = const [
-        _Currency(
-          name: 'YER',
-          code: 'YER',
-          rate: 1.0,
-          isActive: true,
-          isLocal: true,
-        ),
-        _Currency(
-          name: 'SAR',
-          code: 'SAR',
-          rate: 100.0,
-          isActive: true,
-          isLocal: false,
-        ),
-        _Currency(
-          name: 'USD',
-          code: 'USD',
-          rate: 300.0,
-          isActive: true,
-          isLocal: false,
-        ),
-      ];
+      list = const [];
     } else {
       final decoded = jsonDecode(raw) as List<dynamic>;
       list = decoded

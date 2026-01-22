@@ -13,11 +13,7 @@ class CurrencySettingsService {
     final raw = prefs.getString(_prefsKey);
 
     if (raw == null) {
-      return const [
-        AppCurrency(name: 'YER', code: 'YER', rate: 1.0, isActive: true, isLocal: true),
-        AppCurrency(name: 'SAR', code: 'SAR', rate: 100.0, isActive: true, isLocal: false),
-        AppCurrency(name: 'USD', code: 'USD', rate: 300.0, isActive: true, isLocal: false),
-      ];
+      return const [];
     }
 
     final decoded = jsonDecode(raw) as List<dynamic>;
@@ -34,7 +30,15 @@ class CurrencySettingsService {
     final all = await getAllCurrencies();
     final active = all.where((c) => c.isActive).toList();
     return active.isEmpty
-        ? const [AppCurrency(name: 'YER', code: 'YER', rate: 1.0, isActive: true, isLocal: true)]
+        ? const [
+            AppCurrency(
+              name: 'YER',
+              code: 'YER',
+              rate: 1.0,
+              isActive: true,
+              isLocal: true,
+            ),
+          ]
         : active;
   }
 
@@ -51,12 +55,11 @@ class CurrencySettingsService {
   }
 
   AppCurrency _normalize(AppCurrency currency) {
-    final normalizedCode = CurrencyData.normalizeCode(currency.code.isNotEmpty ? currency.code : currency.name);
-
-    return currency.copyWith(
-      code: normalizedCode,
-      name: normalizedCode,
+    final normalizedCode = CurrencyData.normalizeCode(
+      currency.code.isNotEmpty ? currency.code : currency.name,
     );
+
+    return currency.copyWith(code: normalizedCode, name: normalizedCode);
   }
 
   List<AppCurrency> _ensureSingleLocal(List<AppCurrency> list) {
@@ -67,8 +70,6 @@ class CurrencySettingsService {
         ? 'YER'
         : list.first.code;
 
-    return list
-        .map((c) => c.copyWith(isLocal: c.code == preferred))
-        .toList();
+    return list.map((c) => c.copyWith(isLocal: c.code == preferred)).toList();
   }
 }

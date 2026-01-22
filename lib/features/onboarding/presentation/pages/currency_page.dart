@@ -146,7 +146,12 @@ class _CurrencyPageState extends State<CurrencyPage>
                     child: GestureDetector(
                       onTap: () {
                         Navigator.pop(dialogContext);
-                        widget.onCompleted();
+                        // الانتقال مباشرة لصفحة النسخ الاحتياطي (صفحة 3) بدلاً من العملات الفرعية
+                        provider.pageController.animateToPage(
+                          3,
+                          duration: const Duration(milliseconds: 400),
+                          curve: Curves.easeInOut,
+                        );
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),

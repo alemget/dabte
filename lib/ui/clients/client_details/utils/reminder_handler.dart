@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../../data/debt_database.dart';
 import '../../../../models/client.dart';
 import '../../../../models/transaction.dart';
@@ -37,26 +38,29 @@ class ReminderHandler {
     final pickedTime = await showTimePicker(
       context: context,
       useRootNavigator: true,
-      initialTime: const TimeOfDay(hour: 9, minute: 0),
-      initialEntryMode: TimePickerEntryMode.input,
-      builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(primary: Color(0xFFF97316)),
-          ),
-          child: Directionality(
-            textDirection: TextDirection.rtl,
+      initialTime: TimeOfDay.now(), // يحدد صباحاً/مساءً تلقائياً
+      initialEntryMode: TimePickerEntryMode.dial,
+      builder: (context, child) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.light(
+                primary: Color(0xFF3B82F6), // اللون الأزرق الاحترافي
+                onPrimary: Colors.white,
+                onSurface: Colors.black,
+              ),
+            ),
             child: child!,
           ),
-        ),
-      ),
+        );
+      },
     );
 
     if (pickedTime == null) return;
 
     // إنشاء DateTime كامل
-    final reminderDateTime = DateTime(
+    var reminderDateTime = DateTime(
       pickedDate.year,
       pickedDate.month,
       pickedDate.day,
@@ -66,17 +70,36 @@ class ReminderHandler {
 
     // التحقق من أن الوقت في المستقبل
     final now = DateTime.now();
-    if (reminderDateTime.isBefore(now)) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('الرجاء اختيار وقت في المستقبل'),
-            backgroundColor: Colors.red.shade700,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+    if (reminderDateTime.isBefore(now) ||
+        reminderDateTime.isAtSameMomentAs(now)) {
+      // إذا كان التاريخ اليوم والوقت في الماضي، ننقله لليوم التالي تلقائياً
+      if (pickedDate.year == now.year &&
+          pickedDate.month == now.month &&
+          pickedDate.day == now.day) {
+        reminderDateTime = reminderDateTime.add(const Duration(days: 1));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'تم نقل التذكير لليوم التالي لأن الوقت المختار مضى',
+              ),
+              backgroundColor: Colors.orange.shade700,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('الرجاء اختيار وقت في المستقبل'),
+              backgroundColor: Colors.red.shade700,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+        return;
       }
-      return;
     }
 
     try {
@@ -107,7 +130,7 @@ class ReminderHandler {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'تم جدولة التذكير بنجاح في ${pickedDate.day}/${pickedDate.month} الساعة ${pickedTime.format(context)}',
+                    'تم جدولة التذكير بنجاح في ${reminderDateTime.day}/${reminderDateTime.month} الساعة ${pickedTime.format(context)}',
                   ),
                 ),
               ],
@@ -121,6 +144,22 @@ class ReminderHandler {
         );
       }
     } catch (e) {
+      debugPrint('Reminder scheduling error: $e');
+
+      // ترجمة رسالة الخطأ للعربية
+      String errorMessage = 'حدث خطأ أثناء جدولة التذكير';
+      final errorString = e.toString().toLowerCase();
+
+      if (errorString.contains('permission')) {
+        errorMessage = 'يرجى منح إذن الإشعارات من إعدادات التطبيق';
+      } else if (errorString.contains('exact') ||
+          errorString.contains('alarm')) {
+        errorMessage = 'يرجى منح إذن التنبيهات الدقيقة من إعدادات التطبيق';
+      } else if (errorString.contains('past') ||
+          errorString.contains('before')) {
+        errorMessage = 'لا يمكن جدولة تذكير في الماضي';
+      }
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -128,13 +167,21 @@ class ReminderHandler {
               children: [
                 const Icon(Icons.error_outline, color: Colors.white, size: 20),
                 const SizedBox(width: 12),
-                Expanded(child: Text('فشل جدولة التذكير: $e')),
+                Expanded(child: Text(errorMessage)),
               ],
             ),
             backgroundColor: Colors.red.shade700,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
+            ),
+            action: SnackBarAction(
+              label: 'الإعدادات',
+              textColor: Colors.white,
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                openAppSettings();
+              },
             ),
           ),
         );

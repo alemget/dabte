@@ -374,6 +374,18 @@ abstract class AppLocalizations {
   /// **'دين جديد'**
   String get newDebt;
 
+  /// No description provided for @selectDebtType.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختر نوع الدين'**
+  String get selectDebtType;
+
+  /// No description provided for @enterAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل المبلغ'**
+  String get enterAmount;
+
   /// No description provided for @debtForMe.
   ///
   /// In ar, this message translates to:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// مربع حوار اختيار نوع الدين (له/عليه)
 class DebtTypeSelectorDialog extends StatelessWidget {
@@ -7,10 +8,12 @@ class DebtTypeSelectorDialog extends StatelessWidget {
 
   /// عرض مربع حوار اختيار النوع
   static Future<bool?> show(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return showGeneralDialog<bool>(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'إغلاق',
+      barrierLabel: l10n.close,
       barrierColor: Colors.black.withOpacity(0.5),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) =>
@@ -33,12 +36,15 @@ class DebtTypeSelectorDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF1E1E2E) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
 
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: l10n.localeName.startsWith('ar')
+          ? TextDirection.rtl
+          : TextDirection.ltr,
       child: Center(
         child: Material(
           color: Colors.transparent,
@@ -68,11 +74,8 @@ class DebtTypeSelectorDialog extends StatelessWidget {
                         width: 56,
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              const Color(0xFF6366F1),
-                              const Color(0xFF8B5CF6),
-                            ],
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -93,7 +96,7 @@ class DebtTypeSelectorDialog extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'دين جديد',
+                        l10n.newDebt,
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -102,7 +105,7 @@ class DebtTypeSelectorDialog extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'اختر نوع الدين',
+                        l10n.selectDebtType,
                         style: TextStyle(
                           fontSize: 14,
                           color: textColor.withOpacity(0.6),
@@ -120,13 +123,13 @@ class DebtTypeSelectorDialog extends StatelessWidget {
                       // خيار "عليه" (أحمر)
                       Expanded(
                         child: _DebtTypeCard(
-                          title: 'عليه',
-                          subtitle: 'دين عليّ',
+                          title: l10n.onMe,
+                          subtitle: l10n.debtOnMe,
                           icon: Icons.south_rounded,
                           color: const Color(0xFFEF4444),
-                          gradientColors: [
-                            const Color(0xFFEF4444),
-                            const Color(0xFFF87171),
+                          gradientColors: const [
+                            Color(0xFFEF4444),
+                            Color(0xFFF87171),
                           ],
                           onTap: () {
                             HapticFeedback.mediumImpact();
@@ -138,13 +141,13 @@ class DebtTypeSelectorDialog extends StatelessWidget {
                       // خيار "له" (أخضر)
                       Expanded(
                         child: _DebtTypeCard(
-                          title: 'له',
-                          subtitle: 'دين لي',
+                          title: l10n.forMe,
+                          subtitle: l10n.debtForMe,
                           icon: Icons.north_rounded,
                           color: const Color(0xFF10B981),
-                          gradientColors: [
-                            const Color(0xFF10B981),
-                            const Color(0xFF34D399),
+                          gradientColors: const [
+                            Color(0xFF10B981),
+                            Color(0xFF34D399),
                           ],
                           onTap: () {
                             HapticFeedback.mediumImpact();
@@ -168,7 +171,7 @@ class DebtTypeSelectorDialog extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'إلغاء',
+                      l10n.cancel,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,

@@ -54,6 +54,8 @@
   "addDebt": "Add New Debt",
   "editDebt": "Edit Debt",
   "newDebt": "New Debt",
+  "selectDebtType": "Select debt type",
+  "enterAmount": "Enter amount",
   "debtForMe": "They owe me",
   "debtOnMe": "I owe them",
   "amount": "Amount",

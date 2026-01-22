@@ -147,6 +147,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get newDebt => 'دين جديد';
 
   @override
+  String get selectDebtType => 'اختر نوع الدين';
+
+  @override
+  String get enterAmount => 'أدخل المبلغ';
+
+  @override
   String get debtForMe => 'حقتي';
 
   @override

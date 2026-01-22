@@ -54,6 +54,8 @@
   "addDebt": "إضافة دين جديد",
   "editDebt": "تعديل دين",
   "newDebt": "دين جديد",
+  "selectDebtType": "اختر نوع الدين",
+  "enterAmount": "أدخل المبلغ",
   "debtForMe": "حقتي",
   "debtOnMe": "حقه",
   "amount": "المبلغ",

@@ -137,6 +137,7 @@ class _BackupPageState extends State<BackupPage> {
     final picked = await showTimePicker(
       context: context,
       initialTime: initialTime,
+      initialEntryMode: TimePickerEntryMode.dial,
       builder: (context, child) {
         return Directionality(
           textDirection: TextDirection.rtl,

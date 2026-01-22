@@ -147,6 +147,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newDebt => 'New Debt';
 
   @override
+  String get selectDebtType => 'Select debt type';
+
+  @override
+  String get enterAmount => 'Enter amount';
+
+  @override
   String get debtForMe => 'They owe me';
 
   @override

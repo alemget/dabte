@@ -88,6 +88,8 @@ class _NamePageState extends State<NamePage>
 
   @override
   Widget build(BuildContext context) {
+    final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Padding(
@@ -96,25 +98,42 @@ class _NamePageState extends State<NamePage>
           opacity: _fadeAnimation,
           child: SlideTransition(
             position: _slideAnimation,
-            child: Column(
-              children: [
-                const Spacer(flex: 2),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          // مساحة علوية مرنة
+                          if (!keyboardVisible) const Spacer(flex: 2),
+                          if (keyboardVisible) const SizedBox(height: 20),
 
-                // أيقونة التطبيق في الأعلى
-                _buildAppIcon(),
+                          // أيقونة التطبيق في الأعلى (إخفاء عند ظهور لوحة المفاتيح)
+                          if (!keyboardVisible) _buildAppIcon(),
+                          if (!keyboardVisible) const SizedBox(height: 40),
 
-                const SizedBox(height: 40),
+                          // البطاقة الرئيسية
+                          _buildMainCard(),
 
-                // البطاقة الرئيسية
-                _buildMainCard(),
+                          // مساحة سفلية مرنة
+                          if (!keyboardVisible) const Spacer(flex: 1),
+                          if (keyboardVisible) const SizedBox(height: 20),
 
-                const Spacer(flex: 1),
+                          // زر التالي
+                          _buildNextButton(),
 
-                // زر التالي
-                _buildNextButton(),
-
-                const SizedBox(height: 32),
-              ],
+                          SizedBox(height: keyboardVisible ? 16 : 32),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),

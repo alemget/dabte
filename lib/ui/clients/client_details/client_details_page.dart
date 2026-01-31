@@ -10,7 +10,7 @@ import '../../../models/client.dart';
 import '../../../models/transaction.dart';
 import '../../../services/notification_service.dart';
 import '../add_edit_transaction/add_edit_transaction_page.dart';
-import '../add_edit_client/add_edit_client_page.dart';
+
 import '../components/client_app_bar_actions.dart';
 import '../components/client_reminders_sheet.dart';
 import '../../widgets/currency_display_helper.dart';
@@ -30,14 +30,16 @@ class ClientDetailsPage extends StatefulWidget {
 }
 
 class _ClientDetailsPageState extends State<ClientDetailsPage> {
+  late Client _client;
   bool _loading = true;
   List<DebtTransaction> _transactions = [];
   double _forMe = 0;
   double _onMe = 0;
 
   String _getLocalizedCurrencyName(String rawName) {
-    if (rawName == 'LOCAL' || rawName == 'local')
+    if (rawName == 'LOCAL' || rawName == 'local') {
       return AppLocalizations.of(context)!.local;
+    }
 
     final searchKey = CurrencyData.normalizeCode(rawName);
 
@@ -71,6 +73,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
   @override
   void initState() {
     super.initState();
+    _client = widget.client;
     _loadCurrencies();
     _loadData();
     _startReminderCheck();
@@ -320,7 +323,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                     // استخدام مربع الحوار الاحترافي الجديد
                     final result = await AddEditTransactionPage.show(
                       context,
-                      initialClient: widget.client,
+                      initialClient: _client,
                       transaction: tx,
                     );
 
@@ -406,9 +409,14 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
     setState(() {
       _loading = true;
     });
-    final txs = await DebtDatabase.instance.getClientTransactions(
-      widget.client.id!,
-    );
+
+    // تحديث بيانات العميل (لتحديث رقم الجوال إذا تغير)
+    try {
+      final clients = await DebtDatabase.instance.getClients();
+      _client = clients.firstWhere((c) => c.id == widget.client.id);
+    } catch (_) {}
+
+    final txs = await DebtDatabase.instance.getClientTransactions(_client.id!);
 
     double forMe = 0;
     double onMe = 0;
@@ -435,26 +443,11 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
     // استخدام مربع الحوار الاحترافي الجديد
     final added = await AddEditTransactionPage.show(
       context,
-      initialClient: widget.client,
+      initialClient: _client,
     );
 
     if (added == true) {
       await _loadData();
-    }
-  }
-
-  Future<void> _editClient() async {
-    final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (_) => AddEditClientPage(client: widget.client),
-      ),
-    );
-
-    if (result == true) {
-      // إعادة تحميل البيانات
-      await _loadData();
-      // تحديث عنوان الصفحة (في حالة تغيير الاسم)
-      setState(() {});
     }
   }
 
@@ -473,7 +466,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
         onReschedule: (tx) => ReminderHandler.showReminderPicker(
           context: pageContext,
           tx: tx,
-          client: widget.client,
+          client: _client,
           onSuccess: _loadData,
         ),
       ),
@@ -514,7 +507,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
           elevation: 0,
           backgroundColor: Colors.white,
           title: Text(
-            widget.client.name,
+            _client.name,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           centerTitle: true,
@@ -852,8 +845,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                                     ],
                                   ),
                                 );
-                              })
-                              .toList(),
+                              }),
                         ],
                       ),
                     ),
@@ -958,6 +950,7 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
 
                                   return InkWell(
                                     borderRadius: BorderRadius.circular(12),
+                                    onTap: () => _showActionSheet(tx),
                                     onLongPress: () =>
                                         _onTransactionLongPress(tx),
                                     child: Container(
@@ -1053,12 +1046,6 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
                                               ],
                                             ),
                                           ),
-                                          // Action button for WhatsApp/Invoice
-                                          DebtActionButton(
-                                            transaction: tx,
-                                            client: widget.client,
-                                            onClientUpdated: _loadData,
-                                          ),
                                         ],
                                       ),
                                     ),
@@ -1074,14 +1061,33 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
     );
   }
 
+  void _showActionSheet(DebtTransaction tx) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DebtActionSheet(
+        transaction: tx,
+        client: _client,
+        onPhoneUpdated: _loadData,
+      ),
+    );
+  }
+
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final localDate = date.toLocal();
     final diff = now.difference(localDate);
 
-    if (diff.inDays == 0) return 'اليوم';
-    if (diff.inDays == 1) return 'أمس';
-    if (diff.inDays < 7) return '${diff.inDays} أيام';
+    if (diff.inDays == 0) {
+      return 'اليوم';
+    }
+    if (diff.inDays == 1) {
+      return 'أمس';
+    }
+    if (diff.inDays < 7) {
+      return '${diff.inDays} أيام';
+    }
 
     return '${localDate.day}/${localDate.month}';
   }
@@ -1096,9 +1102,15 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
 
   Widget _buildCompactFilters() {
     final filters = <String>[];
-    if (_currencyFilter != 'الكل') filters.add(_currencyFilter);
-    if (_typeFilter != 'الكل') filters.add(_typeFilter);
-    if (_dateOrder != 'الأحدث') filters.add(_dateOrder);
+    if (_currencyFilter != 'الكل') {
+      filters.add(_currencyFilter);
+    }
+    if (_typeFilter != 'الكل') {
+      filters.add(_typeFilter);
+    }
+    if (_dateOrder != 'الأحدث') {
+      filters.add(_dateOrder);
+    }
 
     return Text(
       filters.join(' • '),
@@ -1110,10 +1122,15 @@ class _ClientDetailsPageState extends State<ClientDetailsPage> {
 
   List<DebtTransaction> _applyFilters() {
     final list = _transactions.where((tx) {
-      if (_currencyFilter != 'الكل' && tx.currency != _currencyFilter)
+      if (_currencyFilter != 'الكل' && tx.currency != _currencyFilter) {
         return false;
-      if (_typeFilter == 'له' && !tx.isForMe) return false;
-      if (_typeFilter == 'عليه' && tx.isForMe) return false;
+      }
+      if (_typeFilter == 'له' && !tx.isForMe) {
+        return false;
+      }
+      if (_typeFilter == 'عليه' && tx.isForMe) {
+        return false;
+      }
       return true;
     }).toList();
 

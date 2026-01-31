@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,8 +42,8 @@ class AddEditTransactionPage extends StatefulWidget {
               transaction: transaction,
               preSelectedType: selectedType,
             ),
-        transitionDuration: const Duration(milliseconds: 300),
-        reverseTransitionDuration: const Duration(milliseconds: 250),
+        transitionDuration: const Duration(milliseconds: 350),
+        reverseTransitionDuration: const Duration(milliseconds: 280),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           final curve = CurvedAnimation(
             parent: animation,
@@ -50,7 +51,7 @@ class AddEditTransactionPage extends StatefulWidget {
           );
           return SlideTransition(
             position: Tween<Offset>(
-              begin: const Offset(0, 0.1),
+              begin: const Offset(0, 0.08),
               end: Offset.zero,
             ).animate(curve),
             child: FadeTransition(opacity: curve, child: child),
@@ -111,20 +112,22 @@ class _TransactionPageState extends State<_TransactionPage>
 
   bool get _isEditMode => widget.transaction != null;
 
-  static const _green = Color(0xFF10B981);
-  static const _red = Color(0xFFEF4444);
-  static const _blue = Color(0xFF3B82F6);
+  // ألوان محسنة نفسياً
+  static const _greenPrimary = Color(0xFF059669);
+  static const _greenLight = Color(0xFF10B981);
+  static const _redPrimary = Color(0xFFDC2626);
+  static const _redLight = Color(0xFFEF4444);
+  static const _purplePrimary = Color(0xFF6366F1);
 
   @override
   void initState() {
     super.initState();
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 500),
     );
     _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
 
-    // Listen to note focus changes
     _detailsFocusNode.addListener(_onNoteFocusChanged);
 
     if (_isEditMode) {
@@ -133,7 +136,6 @@ class _TransactionPageState extends State<_TransactionPage>
       _selectedDate = widget.transaction!.date;
       _currency = widget.transaction!.currency;
       _isForMe = widget.transaction!.isForMe;
-      // Initialize reminder time if exists
       if (widget.transaction!.reminderDate != null) {
         _reminderTime = TimeOfDay.fromDateTime(
           widget.transaction!.reminderDate!,
@@ -229,7 +231,6 @@ class _TransactionPageState extends State<_TransactionPage>
   Future<void> _handleSave() async {
     HapticFeedback.mediumImpact();
 
-    // Validate amount
     final amountText = _amountController.text.trim();
     if (amountText.isEmpty ||
         double.tryParse(amountText) == null ||
@@ -293,9 +294,9 @@ class _TransactionPageState extends State<_TransactionPage>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: _red,
+        backgroundColor: _redPrimary,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
       ),
     );
@@ -307,11 +308,14 @@ class _TransactionPageState extends State<_TransactionPage>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
 
-    final bgColor = isDark ? const Color(0xFF121220) : const Color(0xFFF8FAFC);
-    final cardColor = isDark ? const Color(0xFF1E1E2E) : Colors.white;
-    final textColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final mutedColor = isDark ? Colors.grey[400]! : const Color(0xFF64748B);
-    final activeColor = _isForMe ? _green : _red;
+    // ألوان محسنة
+    final bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFFAFBFC);
+    final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final mutedColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF64748B);
+    final activeColor = _isForMe ? _greenPrimary : _redPrimary;
 
     return Directionality(
       textDirection: l10n.localeName.startsWith('ar')
@@ -320,7 +324,12 @@ class _TransactionPageState extends State<_TransactionPage>
       child: Scaffold(
         backgroundColor: bgColor,
         body: _loading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: _purplePrimary,
+                  strokeWidth: 3,
+                ),
+              )
             : FadeTransition(
                 opacity: _fadeAnim,
                 child: Column(
@@ -338,11 +347,20 @@ class _TransactionPageState extends State<_TransactionPage>
                     // Form Content
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                         child: Form(
                           key: _formKey,
                           child: Column(
                             children: [
+                              // Amount Display
+                              _buildAmountDisplay(
+                                isDark,
+                                cardColor,
+                                mutedColor,
+                                activeColor,
+                              ),
+                              const SizedBox(height: 14),
+
                               // Date Field
                               _buildDateField(
                                 l10n,
@@ -351,16 +369,7 @@ class _TransactionPageState extends State<_TransactionPage>
                                 textColor,
                                 mutedColor,
                               ),
-                              const SizedBox(height: 12),
-
-                              // Amount Display
-                              _buildAmountDisplay(
-                                isDark,
-                                cardColor,
-                                mutedColor,
-                                activeColor,
-                              ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 14),
 
                               // Note Field
                               _buildNoteField(
@@ -376,42 +385,27 @@ class _TransactionPageState extends State<_TransactionPage>
                       ),
                     ),
 
-                    // Calculator - hide when note field is focused
+                    // Calculator
                     if (!_isNoteFocused)
                       CalculatorKeyboard(
                         initialValue: _amountController.text,
                         activeColor: activeColor,
                         showDoneButton: true,
                         compactMode: size.height < 700,
-                        currencies: _currencyOptions
-                            .map(
-                              (c) => CurrencyData.all
-                                  .firstWhere(
-                                    (d) => d.code == c.code,
-                                    orElse: () => CurrencyData.all.first,
-                                  )
-                                  .getLocalizedName(context),
-                            )
-                            .toList(),
-                        selectedCurrency: CurrencyData.all
-                            .firstWhere(
-                              (d) => d.code == _currency,
-                              orElse: () => CurrencyData.all.first,
-                            )
-                            .getLocalizedName(context),
-                        onCurrencyChanged: (name) {
-                          final currency = _currencyOptions.firstWhere(
-                            (c) =>
-                                CurrencyData.all
-                                    .firstWhere(
-                                      (d) => d.code == c.code,
-                                      orElse: () => CurrencyData.all.first,
-                                    )
-                                    .getLocalizedName(context) ==
-                                name,
-                            orElse: () => _currencyOptions.first,
+                        currencyData: _currencyOptions.map((c) {
+                          final currencyInfo = CurrencyData.all.firstWhere(
+                            (d) => d.code == c.code,
+                            orElse: () => CurrencyData.all.first,
                           );
-                          setState(() => _currency = currency.code);
+                          return CurrencyDisplayData(
+                            code: c.code,
+                            name: currencyInfo.getLocalizedName(context),
+                            flag: currencyInfo.flag,
+                          );
+                        }).toList(),
+                        selectedCurrencyCode: _currency,
+                        onCurrencyChanged: (code) {
+                          setState(() => _currency = code);
                         },
                         onValueChanged: (value) {
                           setState(() {
@@ -440,9 +434,9 @@ class _TransactionPageState extends State<_TransactionPage>
         color: cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -453,13 +447,15 @@ class _TransactionPageState extends State<_TransactionPage>
           children: [
             // Top bar
             Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 14),
               child: Row(
                 children: [
                   // Back button
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.arrow_back_rounded, color: textColor),
+                  _buildCircleButton(
+                    icon: Icons.arrow_back_rounded,
+                    color: mutedColor,
+                    isDark: isDark,
+                    onTap: () => Navigator.pop(context),
                   ),
 
                   // Title & Client name
@@ -469,14 +465,20 @@ class _TransactionPageState extends State<_TransactionPage>
                         if (_selectedClient != null)
                           Text(
                             _selectedClient!.name,
-                            style: TextStyle(fontSize: 12, color: mutedColor),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: mutedColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
+                        const SizedBox(height: 2),
                         Text(
                           _isEditMode ? l10n.editDebt : l10n.newDebt,
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
                             color: textColor,
+                            letterSpacing: -0.3,
                           ),
                         ),
                       ],
@@ -485,21 +487,21 @@ class _TransactionPageState extends State<_TransactionPage>
 
                   // Save button
                   _isSaving
-                      ? const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                      ? Container(
+                          width: 44,
+                          height: 44,
+                          padding: const EdgeInsets.all(10),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: activeColor,
                           ),
                         )
-                      : IconButton(
-                          onPressed: _handleSave,
-                          icon: Icon(
-                            Icons.check_rounded,
-                            color: activeColor,
-                            size: 28,
-                          ),
+                      : _buildCircleButton(
+                          icon: Icons.check_rounded,
+                          color: activeColor,
+                          isDark: isDark,
+                          filled: true,
+                          onTap: _handleSave,
                         ),
                 ],
               ),
@@ -512,9 +514,9 @@ class _TransactionPageState extends State<_TransactionPage>
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? const Color(0xFF252540)
+                      ? const Color(0xFF0F172A)
                       : const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
                   children: [
@@ -523,18 +525,20 @@ class _TransactionPageState extends State<_TransactionPage>
                       child: _TypeTab(
                         title: l10n.onMe,
                         isSelected: !_isForMe,
-                        color: _red,
+                        primaryColor: _redPrimary,
+                        secondaryColor: _redLight,
                         isDark: isDark,
                         onTap: () => setState(() => _isForMe = false),
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 8),
                     // For Me (Green)
                     Expanded(
                       child: _TypeTab(
                         title: l10n.forMe,
                         isSelected: _isForMe,
-                        color: _green,
+                        primaryColor: _greenPrimary,
+                        secondaryColor: _greenLight,
                         isDark: isDark,
                         onTap: () => setState(() => _isForMe = true),
                       ),
@@ -545,6 +549,41 @@ class _TransactionPageState extends State<_TransactionPage>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildCircleButton({
+    required IconData icon,
+    required Color color,
+    required bool isDark,
+    bool filled = false,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: filled
+              ? color
+              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9)),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: filled
+              ? [
+                  BoxShadow(
+                    color: color.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : null,
+        ),
+        child: Icon(icon, color: filled ? Colors.white : color, size: 22),
       ),
     );
   }
@@ -561,29 +600,69 @@ class _TransactionPageState extends State<_TransactionPage>
     return GestureDetector(
       onTap: _pickDate,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         decoration: BoxDecoration(
           color: cardColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: isDark
                 ? Colors.white.withOpacity(0.08)
                 : Colors.black.withOpacity(0.06),
           ),
+          boxShadow: isDark
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         child: Row(
           children: [
-            Icon(Icons.calendar_today_rounded, size: 20, color: mutedColor),
-            const SizedBox(width: 12),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: _purplePrimary.withOpacity(isDark ? 0.15 : 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.calendar_today_rounded,
+                size: 20,
+                color: _purplePrimary,
+              ),
+            ),
+            const SizedBox(width: 14),
             Expanded(
-              child: Text(
-                '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year} ($dayName)',
-                style: TextStyle(fontSize: 15, color: textColor),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    dayName,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: mutedColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: textColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
             Icon(
               Icons.chevron_left_rounded,
               color: mutedColor.withOpacity(0.5),
+              size: 24,
             ),
           ],
         ),
@@ -598,48 +677,78 @@ class _TransactionPageState extends State<_TransactionPage>
     Color activeColor,
   ) {
     final hasValue = _amountController.text.isNotEmpty;
+    final displayValue = _amountController.text.isEmpty
+        ? '0'
+        : _amountController.text;
 
     return GestureDetector(
       onTap: () {
         if (_isNoteFocused) {
-          // Unfocus note to dismiss native keyboard and show calculator
           _detailsFocusNode.unfocus();
           setState(() => _isNoteFocused = false);
         }
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(16),
+          gradient: hasValue
+              ? LinearGradient(
+                  colors: [
+                    activeColor.withOpacity(isDark ? 0.15 : 0.08),
+                    activeColor.withOpacity(isDark ? 0.08 : 0.03),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          color: hasValue ? null : cardColor,
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: hasValue
                 ? activeColor.withOpacity(0.4)
                 : (isDark
                       ? Colors.white.withOpacity(0.08)
                       : Colors.black.withOpacity(0.06)),
-            width: hasValue ? 1.5 : 1,
+            width: hasValue ? 2 : 1,
           ),
+          boxShadow: hasValue
+              ? [
+                  BoxShadow(
+                    color: activeColor.withOpacity(0.15),
+                    blurRadius: 20,
+                    offset: const Offset(0, 6),
+                  ),
+                ]
+              : null,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: Text(
-                _amountController.text.isEmpty ? '0' : _amountController.text,
-                textAlign: TextAlign.center,
+              child: AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 200),
                 style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 42,
+                  fontWeight: FontWeight.w800,
                   color: hasValue ? activeColor : mutedColor.withOpacity(0.4),
                   letterSpacing: 1,
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
+                child: Text(displayValue, textAlign: TextAlign.center),
               ),
             ),
-            Icon(
-              Icons.calculate_rounded,
-              size: 24,
-              color: mutedColor.withOpacity(0.4),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: (hasValue ? activeColor : mutedColor).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.calculate_rounded,
+                size: 22,
+                color: hasValue ? activeColor : mutedColor.withOpacity(0.5),
+              ),
             ),
           ],
         ),
@@ -655,25 +764,49 @@ class _TransactionPageState extends State<_TransactionPage>
     Color mutedColor,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withOpacity(0.08)
-              : Colors.black.withOpacity(0.06),
+          color: _isNoteFocused
+              ? _purplePrimary.withOpacity(0.5)
+              : (isDark
+                    ? Colors.white.withOpacity(0.08)
+                    : Colors.black.withOpacity(0.06)),
+          width: _isNoteFocused ? 2 : 1,
         ),
+        boxShadow: _isNoteFocused
+            ? [
+                BoxShadow(
+                  color: _purplePrimary.withOpacity(0.1),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
       child: Row(
         children: [
-          Icon(Icons.notes_rounded, size: 20, color: mutedColor),
-          const SizedBox(width: 12),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: _purplePrimary.withOpacity(isDark ? 0.15 : 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.notes_rounded, size: 20, color: _purplePrimary),
+          ),
+          const SizedBox(width: 14),
           Expanded(
             child: TextField(
               controller: _detailsController,
               focusNode: _detailsFocusNode,
-              style: TextStyle(fontSize: 15, color: textColor),
+              style: TextStyle(
+                fontSize: 16,
+                color: textColor,
+                fontWeight: FontWeight.w500,
+              ),
               maxLines: 1,
               textInputAction: TextInputAction.done,
               onEditingComplete: () {
@@ -681,7 +814,10 @@ class _TransactionPageState extends State<_TransactionPage>
               },
               decoration: InputDecoration(
                 hintText: '${l10n.note}...',
-                hintStyle: TextStyle(color: mutedColor.withOpacity(0.5)),
+                hintStyle: TextStyle(
+                  color: mutedColor.withOpacity(0.5),
+                  fontWeight: FontWeight.w400,
+                ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 14),
               ),
@@ -712,6 +848,7 @@ class _TransactionPageState extends State<_TransactionPage>
   }
 
   Future<void> _pickDate() async {
+    HapticFeedback.selectionClick();
     _detailsFocusNode.unfocus();
 
     final picked = await showDatePicker(
@@ -722,7 +859,7 @@ class _TransactionPageState extends State<_TransactionPage>
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
           colorScheme: ColorScheme.light(
-            primary: _blue,
+            primary: _purplePrimary,
             surface: Theme.of(context).scaffoldBackgroundColor,
           ),
         ),
@@ -739,56 +876,109 @@ class _TransactionPageState extends State<_TransactionPage>
   }
 }
 
-/// تبويب نوع الدين
-class _TypeTab extends StatelessWidget {
+/// تبويب نوع الدين المحسن
+class _TypeTab extends StatefulWidget {
   final String title;
   final bool isSelected;
-  final Color color;
+  final Color primaryColor;
+  final Color secondaryColor;
   final bool isDark;
   final VoidCallback onTap;
 
   const _TypeTab({
     required this.title,
     required this.isSelected,
-    required this.color,
+    required this.primaryColor,
+    required this.secondaryColor,
     required this.isDark,
     required this.onTap,
   });
 
   @override
+  State<_TypeTab> createState() => _TypeTabState();
+}
+
+class _TypeTabState extends State<_TypeTab>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.reverse();
         HapticFeedback.selectionClick();
-        onTap();
+        widget.onTap();
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? color : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: color.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: isSelected
-                ? Colors.white
-                : (isDark ? Colors.grey[400] : Colors.grey[600]),
-          ),
-        ),
+      onTapCancel: () => _controller.reverse(),
+      child: AnimatedBuilder(
+        animation: _scaleAnimation,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                gradient: widget.isSelected
+                    ? LinearGradient(
+                        colors: [widget.primaryColor, widget.secondaryColor],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : null,
+                color: widget.isSelected ? null : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: widget.isSelected
+                    ? [
+                        BoxShadow(
+                          color: widget.primaryColor.withOpacity(0.35),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Text(
+                widget.title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: widget.isSelected
+                      ? FontWeight.w700
+                      : FontWeight.w500,
+                  color: widget.isSelected
+                      ? Colors.white
+                      : (widget.isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B)),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

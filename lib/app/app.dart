@@ -126,13 +126,14 @@ class _AppLockWrapperState extends State<AppLockWrapper>
       return const SplashScreen();
     }
 
-    // TODO: مؤقتاً - إظهار شاشة الترحيب دائماً للتجربة
-    // بعد الانتهاء من التجربة، أعد تفعيل الشرط الأصلي:
-    // if (!widget.seenIntro) {
-    if (true) {
+    if (!widget.seenIntro) {
       if (!_introCompleted) {
         return OnboardingFlow(
-          onCompleted: () {
+          onCompleted: () async {
+            // حفظ حالة إتمام المقدمة
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setBool('seen_intro', true);
+
             if (mounted) {
               setState(() {
                 _introCompleted = true;

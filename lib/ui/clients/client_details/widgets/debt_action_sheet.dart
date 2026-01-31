@@ -12,6 +12,7 @@ import '../../../../services/whatsapp_service.dart';
 import '../../../../services/invoice_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../widgets/money_amount.dart';
+import '../utils/reminder_handler.dart';
 
 /// Bottom sheet with debt action options
 class DebtActionSheet extends StatelessWidget {
@@ -265,6 +266,17 @@ class DebtActionSheet extends StatelessWidget {
     }
   }
 
+  void _createNotification(BuildContext context) {
+    Navigator.of(context).pop();
+
+    ReminderHandler.showReminderPicker(
+      context: context,
+      tx: transaction,
+      client: client,
+      onSuccess: onPhoneUpdated ?? () {},
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -358,6 +370,15 @@ class DebtActionSheet extends StatelessWidget {
               title: l10n.generateInvoice,
               subtitle: l10n.shareInvoice,
               onTap: () => _generateInvoice(context),
+            ),
+
+            // Notification option
+            _ActionTile(
+              icon: Icons.notifications_none_outlined,
+              iconColor: Colors.purple,
+              title: "إنشاء إشعار",
+              subtitle: "تذكير في وقت لاحق",
+              onTap: () => _createNotification(context),
             ),
 
             const SizedBox(height: 16),

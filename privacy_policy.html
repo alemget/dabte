@@ -4,109 +4,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سياسة الخصوصية -  ديوماكس</title>
+    <meta name="description" content="Privacy Policy for DioMax App - سياسة الخصوصية لتطبيق ديوماكس">
+    <title>Privacy Policy - سياسة الخصوصية | DioMax</title>
     <style>
         :root {
             --primary-color: #5C6EF8;
+            --secondary-color: #4CAF50;
+            --danger-color: #F44336;
             --text-color: #333;
+            --text-light: #666;
             --bg-color: #f9f9f9;
             --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            font-family: 'Segoe UI', 'Cairo', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
             color: var(--text-color);
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             direction: rtl;
+            padding: 20px;
+            transition: direction 0.3s ease;
+        }
+
+        body.ltr {
+            direction: ltr;
         }
 
         .container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
         header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #4834df 100%);
+            color: white;
+            padding: 40px 30px;
             text-align: center;
-            margin-bottom: 40px;
+            position: relative;
         }
 
-        h1 {
+        .language-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .language-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        body.ltr .language-toggle {
+            right: auto;
+            left: 20px;
+        }
+
+        .website-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid white;
             color: var(--primary-color);
+            padding: 10px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .website-button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        body.ltr .website-button {
+            left: auto;
+            right: 20px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
             margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header .app-name {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            opacity: 0.95;
+        }
+
+        header .last-update {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            margin-top: 10px;
+        }
+
+        .content-wrapper {
+            padding: 40px 30px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.6;
         }
 
         .card {
             background: var(--card-bg);
             border-radius: 12px;
-            padding: 24px;
+            padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
         .card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
         }
 
         h2 {
             color: var(--primary-color);
-            font-size: 1.4rem;
-            margin-top: 0;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--primary-color);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
+            gap: 10px;
         }
 
-        h2::after {
-            content: '+';
+        h2::before {
+            content: '🔹';
             font-size: 1.2rem;
-            font-weight: bold;
-            transition: transform 0.3s;
         }
 
-        h2.active::after {
-            transform: rotate(45deg);
+        h3 {
+            color: var(--text-color);
+            font-size: 1.2rem;
+            margin: 20px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
+        h3::before {
+            content: '▸';
+            color: var(--primary-color);
+            font-size: 1.3rem;
         }
 
-        .content.show {
-            max-height: 1000px;
-            /* Arbitrary large height */
-            margin-top: 15px;
+        p {
+            margin-bottom: 12px;
+            line-height: 1.8;
         }
 
         ul {
-            padding-right: 20px;
+            padding-inline-start: 25px;
+            margin: 15px 0;
         }
 
         li {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+
+        li strong {
+            color: var(--primary-color);
+        }
+
+        .highlight {
+            background: #fff3cd;
+            border-inline-start: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .highlight-info {
+            background: #d1ecf1;
+            border-inline-start: 4px solid #0dcaf0;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .highlight-success {
+            background: #d4edda;
+            border-inline-start: 4px solid var(--secondary-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: start;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f8f9fa;
         }
 
         footer {
+            background: #2c3e50;
+            color: white;
             text-align: center;
-            margin-top: 40px;
-            color: #666;
-            font-size: 0.9rem;
+            padding: 30px;
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .contact-info {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .contact-info a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 2px solid white;
+        }
+
+        .lang-ar {
+            display: block;
+        }
+
+        .lang-en {
+            display: none;
+        }
+
+        body.ltr .lang-ar {
+            display: none;
+        }
+
+        body.ltr .lang-en {
+            display: block;
         }
 
         @media (max-width: 600px) {
-            .container {
-                margin: 20px auto;
-                padding: 15px;
+            body {
+                padding: 10px;
             }
+
+            header {
+                padding: 50px 20px 30px;
+            }
+
+            header h1 {
+                font-size: 1.6rem;
+            }
+
+            .language-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 6px 15px;
+                font-size: 0.8rem;
+            }
+
+            body.ltr .language-toggle {
+                right: auto;
+                left: 10px;
+            }
+
+            .website-button {
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+                margin: 0 auto 15px;
+                display: flex;
+                justify-content: center;
+                font-size: 0.85rem;
+                padding: 8px 20px;
+            }
+
+            .content-wrapper {
+                padding: 25px 20px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .data-table {
+                font-size: 0.9rem;
+            }
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
         }
     </style>
 </head>
@@ -115,109 +379,517 @@
 
     <div class="container">
         <header>
-            <h1>سياسة الخصوصية</h1>
-            <p>تطبيق  diomax -  ديوماكس</p>
-            <p style="font-size: 0.9em; color: #666;">آخر تحديث: 16 ديسمبر 2025</p>
+            <a href="https://diomax.netlify.app/" class="website-button" target="_blank">
+                <span class="lang-ar">🌐 زيارة الموقع</span>
+                <span class="lang-en">🌐 Visit Website</span>
+            </a>
+
+            <button class="language-toggle" onclick="toggleLanguage()">
+                <span class="lang-ar">English</span>
+                <span class="lang-en">العربية</span>
+            </button>
+
+            <h1>
+                <span class="lang-ar">سياسة الخصوصية</span>
+                <span class="lang-en">Privacy Policy</span>
+            </h1>
+
+            <div class="app-name">
+                <span class="lang-ar">تطبيق DioMax - ديوماكس</span>
+                <span class="lang-en">DioMax App</span>
+            </div>
+
+            <div class="app-name">
+                <span class="lang-ar">لإدارة الديون والمعاملات المالية</span>
+                <span class="lang-en">Debt & Transaction Management</span>
+            </div>
+
+            <div class="last-update">
+                <span class="lang-ar">📅 آخر تحديث: 12 فبراير 2026</span>
+                <span class="lang-en">📅 Last Updated: February 12, 2026</span>
+            </div>
         </header>
 
-        <div class="card">
-            <h2 onclick="toggleSection(this)">مقدمة</h2>
-            <div class="content show">
-                <p>نحن في ديوماكس" نأخذ خصوصيتك على محمل الجد. تم تصميم التطبيق ليكون آمناً تماماً ويعمل بشكل محلي
-                    (Offline-first) لمنحك السيطرة الكاملة على بياناتك المالية.</p>
-            </div>
-        </div>
+        <div class="content-wrapper">
 
-        <div class="card">
-            <h2 onclick="toggleSection(this)">جمع البيانات وتخزينها</h2>
-            <div class="content">
-                <p><strong>التخزين المحلي:</strong> جميع البيانات التي تقوم بإدخالها (أسماء العملاء، تفاصيل الديون،
-                    المعاملات المالية) يتم تخزينها <strong>محلياً فقط</strong> على جهازك الخاص باستخدام قاعدة بيانات
-                    مشفرة.</p>
-                <p><strong>لا خوادم خارجية:</strong> نحن لا نمتلك أي خوادم سحابية ولا نقوم برفع أو مشاركة أي من بياناتك
-                    مع أي جهة خارجية.</p>
+            <div class="intro">
+                <div class="lang-ar">
+                    <strong>🔐 خصوصيتك أولويتنا القصوى</strong><br>
+                    نحن في "DioMax - ديوماكس" نلتزم بحماية خصوصيتك وبياناتك المالية. تم تصميم التطبيق ليعمل بشكل محلي
+                    (Offline-First) مع تخزين جميع بياناتك على جهازك فقط، مما يمنحك السيطرة الكاملة على معلوماتك.
+                </div>
+                <div class="lang-en">
+                    <strong>🔐 Your Privacy is Our Top Priority</strong><br>
+                    At DioMax, we are committed to protecting your privacy and financial data. The app is designed to
+                    work locally
+                    (Offline-First) with all your data stored only on your device, giving you complete control over your
+                    information.
+                </div>
             </div>
-        </div>
 
-        <div class="card">
-            <h2 onclick="toggleSection(this)">الصلاحيات والإذونات</h2>
-            <div class="content">
-                <p>يطلب التطبيق الإذونات التالية لأداء وظائفه الأساسية فقط:</p>
+            <!-- 1. Introduction -->
+            <div class="card">
+                <h2>
+                    <span class="lang-ar">مقدمة</span>
+                    <span class="lang-en">Introduction</span>
+                </h2>
+                <div class="lang-ar">
+                    <p>
+                        تطبيق <strong>DioMax - ديوماكس</strong> (معرّف التطبيق: <code>com.diomax.app</code>) هو تطبيق
+                        مخصص لإدارة الديون والمعاملات المالية بين الأفراد والعملاء. نحن نأخذ خصوصيتك وأمان بياناتك على
+                        محمل
+                        الجد، ونلتزم بالشفافية الكاملة حول كيفية جمع واستخدام وحماية معلوماتك.
+                    </p>
+                    <div class="highlight-success">
+                        <strong>✅ ملاحظة مهمة:</strong> التطبيق لا يمتلك أي خوادم خارجية، وجميع بياناتك تُخزن محلياً على
+                        جهازك فقط.
+                    </div>
+                </div>
+                <div class="lang-en">
+                    <p>
+                        <strong>DioMax</strong> (App ID: <code>com.diomax.app</code>) is an application dedicated to
+                        managing debts
+                        and financial transactions between individuals and clients. We take your privacy and data
+                        security seriously,
+                        and we are committed to complete transparency about how we collect, use, and protect your
+                        information.
+                    </p>
+                    <div class="highlight-success">
+                        <strong>✅ Important Note:</strong> The app does not have any external servers, and all your data
+                        is stored
+                        locally on your device only.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Data We Collect -->
+            <div class="card">
+                <h2>
+                    <span class="lang-ar">البيانات التي نجمعها ونخزنها</span>
+                    <span class="lang-en">Data We Collect and Store</span>
+                </h2>
+
+                <h3>
+                    <span class="lang-ar">البيانات المحلية (على جهازك فقط)</span>
+                    <span class="lang-en">Local Data (On Your Device Only)</span>
+                </h3>
+
+                <div class="lang-ar">
+                    <p>يقوم التطبيق بتخزين البيانات التالية محلياً في قاعدة بيانات مشفرة:</p>
+                </div>
+                <div class="lang-en">
+                    <p>The app stores the following data locally in an encrypted database:</p>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="lang-ar">نوع البيانات</th>
+                            <th class="lang-ar">الغرض من الجمع</th>
+                            <th class="lang-ar">مكان التخزين</th>
+                            <th class="lang-en">Data Type</th>
+                            <th class="lang-en">Purpose</th>
+                            <th class="lang-en">Storage Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="lang-ar"><strong>معلومات العملاء</strong><br>(الأسماء، أرقام الهواتف)</td>
+                            <td class="lang-ar">لإدارة قائمة العملاء والتواصل معهم</td>
+                            <td class="lang-ar">محلي (SQLite)</td>
+                            <td class="lang-en"><strong>Client Information</strong><br>(Names, Phone Numbers)</td>
+                            <td class="lang-en">To manage client list and contact them</td>
+                            <td class="lang-en">Local (SQLite)</td>
+                        </tr>
+                        <tr>
+                            <td class="lang-ar"><strong>المعاملات المالية</strong><br>(المبالغ، التواريخ، التفاصيل،
+                                العملات)</td>
+                            <td class="lang-ar">لتسجيل ومتابعة الديون والمدفوعات</td>
+                            <td class="lang-ar">محلي (SQLite)</td>
+                            <td class="lang-en"><strong>Financial Transactions</strong><br>(Amounts, Dates, Details,
+                                Currencies)</td>
+                            <td class="lang-en">To record and track debts and payments</td>
+                            <td class="lang-en">Local (SQLite)</td>
+                        </tr>
+                        <tr>
+                            <td class="lang-ar"><strong>معلومات الملف الشخصي</strong><br>(اسمك، هاتفك، عنوانك)</td>
+                            <td class="lang-ar">لإصدار الفواتير والتقارير</td>
+                            <td class="lang-ar">محلي (SQLite)</td>
+                            <td class="lang-en"><strong>Profile Information</strong><br>(Your Name, Phone, Address)</td>
+                            <td class="lang-en">For generating invoices and reports</td>
+                            <td class="lang-en">Local (SQLite)</td>
+                        </tr>
+                        <tr>
+                            <td class="lang-ar"><strong>الإعدادات</strong><br>(العملة الرئيسية، إعدادات القفل)</td>
+                            <td class="lang-ar">لحفظ تفضيلاتك الشخصية</td>
+                            <td class="lang-ar">محلي (SharedPreferences)</td>
+                            <td class="lang-en"><strong>Settings</strong><br>(Primary Currency, Lock Settings)</td>
+                            <td class="lang-en">To save your personal preferences</td>
+                            <td class="lang-en">Local (SharedPreferences)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="highlight-info">
+                    <div class="lang-ar">
+                        <strong>ℹ️ جميع هذه البيانات:</strong>
+                        <ul>
+                            <li>تُخزن محلياً على جهازك فقط</li>
+                            <li>لا تُرسل إلى أي خوادم خارجية</li>
+                            <li>لا يمكن للمطور أو أي طرف ثالث الوصول إليها</li>
+                            <li>تُحذف نهائياً عند حذف التطبيق</li>
+                        </ul>
+                    </div>
+                    <div class="lang-en">
+                        <strong>ℹ️ All this data:</strong>
+                        <ul>
+                            <li>Is stored locally on your device only</li>
+                            <li>Is not sent to any external servers</li>
+                            <li>Cannot be accessed by the developer or any third party</li>
+                            <li>Is permanently deleted when you uninstall the app</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Permissions -->
+            <div class="card">
+                <h2>
+                    <span class="lang-ar">الأذونات والصلاحيات المطلوبة</span>
+                    <span class="lang-en">Required Permissions</span>
+                </h2>
+
+                <div class="lang-ar">
+                    <p>يطلب التطبيق الأذونات التالية لأداء وظائفه الأساسية:</p>
+                </div>
+                <div class="lang-en">
+                    <p>The app requests the following permissions to perform its core functions:</p>
+                </div>
+
+                <h3>
+                    <span class="lang-ar">1. المصادقة البيومترية (البصمة/الوجه)</span>
+                    <span class="lang-en">1. Biometric Authentication (Fingerprint/Face)</span>
+                </h3>
                 <ul>
-                    <li><strong>الإشعارات (Notifications):</strong> لإرسال تذكيرات بمواعيد سداد الديون.</li>
-                    <li><strong>المنبهات (Alarms):</strong> لجدولة التنبيهات بدقة في الوقت المحدد.</li>
-                    <li><strong>تحسين البطارية (Battery Optimization):</strong> لضمان عمل التنبيهات في الخلفية دون أن
-                        يوقفها النظام.</li>
-                    <li><strong>التخزين والملفات:</strong> لإنشاء واستعادة النسخ الاحتياطية (عند طلبك فقط).</li>
-                    <li><strong>المصادقة الحيوية (Biometrics):</strong> لتأمين التطبيق ببصمة الإصبع أو الوجه.</li>
+                    <li class="lang-ar"><strong>الإذن:</strong> <code>USE_BIOMETRIC</code></li>
+                    <li class="lang-ar"><strong>الغرض:</strong> لتأمين التطبيق بالبصمة أو التعرف على الوجه لحماية
+                        بياناتك المالية من المتطفلين</li>
+                    <li class="lang-ar"><strong>متى يُستخدم:</strong> فقط عند تفعيل ميزة القفل في الإعدادات</li>
+
+                    <li class="lang-en"><strong>Permission:</strong> <code>USE_BIOMETRIC</code></li>
+                    <li class="lang-en"><strong>Purpose:</strong> To secure the app with fingerprint or face recognition
+                        to protect your financial data from intruders</li>
+                    <li class="lang-en"><strong>When Used:</strong> Only when you enable the lock feature in settings
+                    </li>
+                </ul>
+
+                <h3>
+                    <span class="lang-ar">2. الإشعارات والتنبيهات</span>
+                    <span class="lang-en">2. Notifications & Alarms</span>
+                </h3>
+                <ul>
+                    <li class="lang-ar"><strong>الأذونات:</strong> <code>POST_NOTIFICATIONS</code>,
+                        <code>SCHEDULE_EXACT_ALARM</code>, <code>WAKE_LOCK</code>, <code>RECEIVE_BOOT_COMPLETED</code>
+                    </li>
+                    <li class="lang-ar"><strong>الغرض:</strong> لإرسال تذكيرات بمواعيد سداد الديون في الوقت المحدد بدقة
+                    </li>
+                    <li class="lang-ar"><strong>متى تُستخدم:</strong> فقط عند إنشاء تذكيرات للديون</li>
+
+                    <li class="lang-en"><strong>Permissions:</strong> <code>POST_NOTIFICATIONS</code>,
+                        <code>SCHEDULE_EXACT_ALARM</code>, <code>WAKE_LOCK</code>, <code>RECEIVE_BOOT_COMPLETED</code>
+                    </li>
+                    <li class="lang-en"><strong>Purpose:</strong> To send reminders for debt payment dates accurately at
+                        scheduled times</li>
+                    <li class="lang-en"><strong>When Used:</strong> Only when you create debt reminders</li>
+                </ul>
+
+                <h3>
+                    <span class="lang-ar">3. التخزين والملفات</span>
+                    <span class="lang-en">3. Storage & Files</span>
+                </h3>
+                <ul>
+                    <li class="lang-ar"><strong>الأذونات:</strong> <code>MANAGE_EXTERNAL_STORAGE</code>,
+                        <code>READ_EXTERNAL_STORAGE</code>, <code>WRITE_EXTERNAL_STORAGE</code>
+                    </li>
+                    <li class="lang-ar"><strong>الغرض:</strong> <strong>فقط</strong> لإنشاء واستعادة النسخ الاحتياطية
+                        من/إلى ذاكرة جهازك</li>
+                    <li class="lang-ar"><strong>متى تُستخدم:</strong> عند طلبك إنشاء نسخة احتياطية أو استعادتها</li>
+
+                    <li class="lang-en"><strong>Permissions:</strong> <code>MANAGE_EXTERNAL_STORAGE</code>,
+                        <code>READ_EXTERNAL_STORAGE</code>, <code>WRITE_EXTERNAL_STORAGE</code>
+                    </li>
+                    <li class="lang-en"><strong>Purpose:</strong> <strong>Only</strong> to create and restore backups
+                        to/from your device storage</li>
+                    <li class="lang-en"><strong>When Used:</strong> When you request to create or restore a backup</li>
+                </ul>
+
+                <div class="highlight">
+                    <div class="lang-ar">
+                        <strong>⚠️ ملاحظة هامة عن أذونات التخزين:</strong><br>
+                        إذن <code>MANAGE_EXTERNAL_STORAGE</code> هو إذن حساس نستخدمه فقط للسماح لك بحفظ النسخ الاحتياطية
+                        واستعادتها. التطبيق <strong>لا يصل مطلقاً</strong> إلى ملفاتك، صورك، أو أي بيانات أخرى على
+                        جهازك.
+                    </div>
+                    <div class="lang-en">
+                        <strong>⚠️ Important Note About Storage Permissions:</strong><br>
+                        <code>MANAGE_EXTERNAL_STORAGE</code> is a sensitive permission we use only to allow you to save
+                        and restore backups.
+                        The app <strong>never accesses</strong> your files, photos, or any other data on your device.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Google Drive Backup -->
+            <div class="card">
+                <h2>
+                    <span class="lang-ar">النسخ الاحتياطي السحابي (Google Drive)</span>
+                    <span class="lang-en">Cloud Backup (Google Drive)</span>
+                </h2>
+
+                <h3>
+                    <span class="lang-ar">كيف يعمل؟</span>
+                    <span class="lang-en">How Does It Work?</span>
+                </h3>
+
+                <div class="lang-ar">
+                    <p>يوفر التطبيق ميزة اختيارية للنسخ الاحتياطي السحابي عبر <strong>Google Drive</strong> لحماية
+                        بياناتك:</p>
+                    <ul>
+                        <li><strong>تسجيل الدخول:</strong> يستخدم التطبيق <code>Google Sign-In</code> للمصادقة - نحن لا
+                            نخزن بيانات حسابك</li>
+                        <li><strong>النطاق المحدود:</strong> يستخدم نطاق <code>appDataFolder</code> فقط - لا يمكن
+                            للتطبيق رؤية أو الوصول إلى أي من ملفاتك الأخرى</li>
+                        <li><strong>التشفير:</strong> جميع النسخ الاحتياطية مشفرة قبل الرفع</li>
+                        <li><strong>الاتصال المباشر:</strong> يتم الاتصال مباشرة بين جهازك وخوادم Google - نحن لا نملك
+                            حق الوصول لحسابك</li>
+                    </ul>
+                </div>
+                <div class="lang-en">
+                    <p>The app provides an optional cloud backup feature via <strong>Google Drive</strong> to protect
+                        your data:</p>
+                    <ul>
+                        <li><strong>Sign In:</strong> The app uses <code>Google Sign-In</code> for authentication - we
+                            don't store your account data</li>
+                        <li><strong>Limited Scope:</strong> Uses only <code>appDataFolder</code> scope - the app cannot
+                            see or access any of your other files</li>
+                        <li><strong>Encryption:</strong> All backups are encrypted before upload</li>
+                        <li><strong>Direct Connection:</strong> Connection is made directly between your device and
+                            Google servers - we have no access to your account</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-success">
+                    <div class="lang-ar">
+                        <strong>✅ ضمانات الخصوصية:</strong>
+                        <ul>
+                            <li>النسخ الاحتياطي اختياري تماماً - يمكنك استخدام التطبيق بدونه</li>
+                            <li>أنت المالك الوحيد لنسخك الاحتياطية في حسابك</li>
+                            <li>يمكنك حذف النسخ الاحتياطية من Google Drive في أي وقت</li>
+                            <li>المطور لا يستطيع الوصول لبياناتك نهائياً</li>
+                        </ul>
+                    </div>
+                    <div class="lang-en">
+                        <strong>✅ Privacy Guarantees:</strong>
+                        <ul>
+                            <li>Backup is completely optional - you can use the app without it</li>
+                            <li>You are the sole owner of your backups in your account</li>
+                            <li>You can delete backups from Google Drive at any time</li>
+                            <li>The developer cannot access your data at all</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Data Security -->
+            <div class="card">
+                <h2>
+                    <span class="lang-ar">أمان وحماية البيانات</span>
+                    <span class="lang-en">Data Security & Protection</span>
+                </h2>
+
+                <h3>
+                    <span class="lang-ar">الإجراءات الأمنية المطبقة</span>
+                    <span class="lang-en">Security Measures Implemented</span>
+                </h3>
+
+                <ul>
+                    <li class="lang-ar"><strong>قفل التطبيق:</strong> يمكنك حماية التطبيق برمز المرور أو البصمة/الوجه
+                    </li>
+                    <li class="lang-ar"><strong>التخزين الآمن:</strong> البيانات محفوظة في قاعدة بيانات SQLite داخل
+                        مساحة التطبيق المحمية</li>
+                    <li class="lang-ar"><strong>التشفير:</strong> النسخ الاحتياطية مشفرة باستخدام خوارزميات تشفير قوية
+                    </li>
+                    <li class="lang-ar"><strong>عدم المشاركة:</strong> لا نشارك بياناتك مع أي طرف ثالث نهائياً</li>
+                    <li class="lang-ar"><strong>لا إعلانات:</strong> التطبيق خالٍ تماماً من الإعلانات وأدوات التتبع</li>
+
+                    <li class="lang-en"><strong>App Lock:</strong> You can protect the app with passcode or biometrics
+                    </li>
+                    <li class="lang-en"><strong>Secure Storage:</strong> Data is stored in SQLite database within
+                        protected app sandbox</li>
+                    <li class="lang-en"><strong>Encryption:</strong> Backups are encrypted using strong encryption
+                        algorithms</li>
+                    <li class="lang-en"><strong>No Sharing:</strong> We never share your data with any third party</li>
+                    <li class="lang-en"><strong>No Ads:</strong> The app is completely free of ads and tracking tools
+                    </li>
                 </ul>
             </div>
-        </div>
 
-        <div class="card">
-            <h2 onclick="toggleSection(this)">النسخ الاحتياطي (Google Drive)</h2>
-            <div class="content">
-                <p>يوفر التطبيق ميزة النسخ الاحتياطي السحابي عبر <strong>Google Drive</strong>:</p>
-                <ul>
-                    <li>يتم الاتصال مباشرة بين جهازك وخدمة Google Drive.</li>
-                    <li>يستخدم التطبيق نطاق وصول محدود (appDataFolder) مما يعني أنه لا يستطيع رؤية أو تعديل أي ملفات
-                        أخرى في حسابك، فقط الملفات التي أنشأها هو.</li>
-                    <li>نحن (مطور التطبيق) لا نملك حق الوصول إلى حسابك أو نسخك الاحتياطية.</li>
-                </ul>
-            </div>
-        </div>
+            <!-- 6. Data Sharing -->
+            <div class="card">
+                <h2>
+                    <span class="lang-ar">مشاركة البيانات مع الغير</span>
+                    <span class="lang-en">Data Sharing with Third Parties</span>
+                </h2>
 
-        <div class="card">
-            <h2 onclick="toggleSection(this)">أمان البيانات</h2>
-            <div class="content">
-                <ul>
-                    <li>يمكنك قفل التطبيق باستخدام رمز المرور أو البصمة لمنع المتطفلين.</li>
-                    <li>بياناتك مخزنة في قاعدة بيانات SQLite آمنة داخل مساحة التخزين الخاصة بالتطبيق (Sandbox).</li>
-                </ul>
-            </div>
-        </div>
+                <div class="highlight-success">
+                    <h3 style="margin: 0;">
+                        <span class="lang-ar">🚫 نحن لا نشارك بياناتك مع أي طرف ثالث نهائياً</span>
+                        <span class="lang-en">🚫 We Do Not Share Your Data with Any Third Party</span>
+                    </h3>
+                </div>
 
-        <div class="card">
-            <h2 onclick="toggleSection(this)">حذف البيانات</h2>
-            <div class="content">
-                <p>بما أنك المالك الوحيد لبياناتك:</p>
-                <ul>
-                    <li>يمكنك حذف أي عميل أو معاملة من داخل التطبيق في أي وقت.</li>
-                    <li>حذف التطبيق من جهازك سيؤدي إلى حذف جميع البيانات المخزنة محلياً بشكل نهائي.</li>
-                    <li>يمكنك حذف النسخ الاحتياطية من حساب Google Drive الخاص بك يدوياً.</li>
-                </ul>
+                <div class="lang-ar">
+                    <p>التطبيق <strong>لا يحتوي</strong> على:</p>
+                    <ul>
+                        <li>❌ إعلانات من أطراف ثالثة</li>
+                        <li>❌ أدوات تحليلات (Analytics)</li>
+                        <li>❌ أدوات تتبع (Tracking)</li>
+                        <li>❌ شبكات اجتماعية</li>
+                        <li>❌ خدمات تسويقية</li>
+                    </ul>
+                </div>
+                <div class="lang-en">
+                    <p>The app <strong>does not contain</strong>:</p>
+                    <ul>
+                        <li>❌ Third-party advertisements</li>
+                        <li>❌ Analytics tools</li>
+                        <li>❌ Tracking tools</li>
+                        <li>❌ Social networks</li>
+                        <li>❌ Marketing services</li>
+                    </ul>
+                </div>
             </div>
+
+            <!-- 7. Your Rights -->
+            <div class="card">
+                <h2>
+                    <span class="lang-ar">حقوقك وتحكمك في البيانات</span>
+                    <span class="lang-en">Your Rights & Data Control</span>
+                </h2>
+
+                <div class="lang-ar">
+                    <p>أنت المالك الوحيد لبياناتك ولديك الحقوق التالية:</p>
+                    <ul>
+                        <li><strong>حق الوصول:</strong> يمكنك الوصول لجميع بياناتك في أي وقت</li>
+                        <li><strong>حق التعديل:</strong> يمكنك تعديل أي معلومات في أي وقت</li>
+                        <li><strong>حق الحذف:</strong> يمكنك حذف أي بيانات أو حذف التطبيق نهائياً</li>
+                        <li><strong>حق النقل:</strong> يمكنك عمل نسخة احتياطية ونقل بياناتك</li>
+                    </ul>
+                </div>
+                <div class="lang-en">
+                    <p>You are the sole owner of your data and have the following rights:</p>
+                    <ul>
+                        <li><strong>Right to Access:</strong> You can access all your data at any time</li>
+                        <li><strong>Right to Modify:</strong> You can modify any information at any time</li>
+                        <li><strong>Right to Delete:</strong> You can delete any data or uninstall the app completely
+                        </li>
+                        <li><strong>Right to Portability:</strong> You can create backups and transfer your data</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 8. Children's Privacy -->
+            <div class="card">
+                <h2>
+                    <span class="lang-ar">خصوصية الأطفال</span>
+                    <span class="lang-en">Children's Privacy</span>
+                </h2>
+
+                <div class="lang-ar">
+                    <p>هذا التطبيق <strong>ليس موجهاً للأطفال</strong> دون سن 13 عاماً. نحن لا نجمع عن قصد معلومات من
+                        الأطفال.</p>
+                </div>
+                <div class="lang-en">
+                    <p>This app is <strong>not directed to children</strong> under 13 years old. We do not knowingly
+                        collect information from children.</p>
+                </div>
+            </div>
+
+            <!-- 9. Contact Us -->
+            <div class="contact-info">
+                <h2 style="color: white; border: none; margin-bottom: 15px;">
+                    <span class="lang-ar">📧 التواصل معنا</span>
+                    <span class="lang-en">📧 Contact Us</span>
+                </h2>
+
+                <div class="lang-ar">
+                    <p>إذا كان لديك أي أسئلة أو استفسارات حول سياسة الخصوصية، يمكنك التواصل معنا عبر:</p>
+                </div>
+                <div class="lang-en">
+                    <p>If you have any questions about this Privacy Policy, you can contact us at:</p>
+                </div>
+
+                <p style="font-size: 1.2rem; margin-top: 15px;">
+                    <strong>
+                        <span class="lang-ar">البريد الإلكتروني:</span>
+                        <span class="lang-en">Email:</span>
+                    </strong>
+                    <a href="mailto:diomax.app@gmail.com">diomax.app@gmail.com</a>
+                </p>
+
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    <span class="lang-ar">نرد على جميع الاستفسارات خلال 48 ساعة</span>
+                    <span class="lang-en">We respond to all inquiries within 48 hours</span>
+                </p>
+            </div>
+
         </div>
 
         <footer>
-            <p>&copy; 2025 DioMax. جميع الحقوق محفوظة.</p>
+            <p><strong>DioMax - ديوماكس</strong></p>
+            <p>
+                <span class="lang-ar">تطبيق احترافي لإدارة الديون والمعاملات المالية</span>
+                <span class="lang-en">Professional Debt & Transaction Management App</span>
+            </p>
+            <p style="margin-top: 15px;">&copy; 2026 DioMax.
+                <span class="lang-ar">جميع الحقوق محفوظة.</span>
+                <span class="lang-en">All rights reserved.</span>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                <span class="lang-ar">معرّف التطبيق:</span>
+                <span class="lang-en">App ID:</span>
+                com.diomax.app
+            </p>
         </footer>
     </div>
 
     <script>
-        function toggleSection(header) {
-            // Toggle active class for arrow rotation
-            header.classList.toggle('active');
+        function toggleLanguage() {
+            const body = document.body;
+            const html = document.documentElement;
 
-            // Toggle content visibility
-            var content = header.nextElementSibling;
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-                content.classList.remove('show');
+            if (body.classList.contains('ltr')) {
+                body.classList.remove('ltr');
+                html.setAttribute('lang', 'ar');
+                html.setAttribute('dir', 'rtl');
+                localStorage.setItem('language', 'ar');
             } else {
-                // Close others (optional, feels more accordion-like)
-                // document.querySelectorAll('.content').forEach(c => {
-                //     c.style.maxHeight = null;
-                //     c.previousElementSibling.classList.remove('active');
-                // });
-
-                content.style.maxHeight = content.scrollHeight + "px";
-                content.classList.add('show');
+                body.classList.add('ltr');
+                html.setAttribute('lang', 'en');
+                html.setAttribute('dir', 'ltr');
+                localStorage.setItem('language', 'en');
             }
         }
 
-        // Initialize: Open first section
-        // document.querySelector('.content').style.maxHeight = document.querySelector('.content').scrollHeight + "px";
+        // Load saved language preference
+        window.addEventListener('DOMContentLoaded', function () {
+            const savedLang = localStorage.getItem('language');
+            if (savedLang === 'en') {
+                document.body.classList.add('ltr');
+                document.documentElement.setAttribute('lang', 'en');
+                document.documentElement.setAttribute('dir', 'ltr');
+            }
+        });
     </script>
 
 </body>

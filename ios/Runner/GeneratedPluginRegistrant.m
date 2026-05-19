@@ -36,12 +36,6 @@
 @import flutter_native_contact_picker;
 #endif
 
-#if __has_include(<flutter_native_splash/FlutterNativeSplashPlugin.h>)
-#import <flutter_native_splash/FlutterNativeSplashPlugin.h>
-#else
-@import flutter_native_splash;
-#endif
-
 #if __has_include(<flutter_timezone/FlutterTimezonePlugin.h>)
 #import <flutter_timezone/FlutterTimezonePlugin.h>
 #else
@@ -110,7 +104,6 @@
   [FlutterKeyboardVisibilityPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterKeyboardVisibilityPlugin"]];
   [FlutterLocalNotificationsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterLocalNotificationsPlugin"]];
   [FlutterNativeContactPickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterNativeContactPickerPlugin"]];
-  [FlutterNativeSplashPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterNativeSplashPlugin"]];
   [FlutterTimezonePlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterTimezonePlugin"]];
   [FLTGoogleSignInPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleSignInPlugin"]];
   [LocalAuthPlugin registerWithRegistrar:[registry registrarForPlugin:@"LocalAuthPlugin"]];

@@ -20,7 +20,7 @@ void callbackDispatcher() {
       // تهيئة الإشعارات
       final notificationsPlugin = FlutterLocalNotificationsPlugin();
       const androidSettings = AndroidInitializationSettings(
-        '@mipmap/launcher_icon',
+        '@mipmap/ic_launcher',
       );
       const initSettings = InitializationSettings(android: androidSettings);
       await notificationsPlugin.initialize(initSettings);
@@ -326,7 +326,7 @@ class BackgroundBackupService {
   static Future<void> showTestNotification() async {
     final notificationsPlugin = FlutterLocalNotificationsPlugin();
     const androidSettings = AndroidInitializationSettings(
-      '@mipmap/launcher_icon',
+      '@mipmap/ic_launcher',
     );
     const initSettings = InitializationSettings(android: androidSettings);
     await notificationsPlugin.initialize(initSettings);

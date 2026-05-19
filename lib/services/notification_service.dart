@@ -35,7 +35,7 @@ class NotificationService {
 
       // 2. إعدادات المنصات
       const androidSettings = AndroidInitializationSettings(
-        '@mipmap/launcher_icon',
+        '@mipmap/ic_launcher',
       );
 
       const iosSettings = DarwinInitializationSettings(
@@ -132,7 +132,7 @@ class NotificationService {
       channelDescription: _channelDescription,
       importance: Importance.max,
       priority: Priority.high,
-      icon: '@mipmap/launcher_icon',
+      icon: '@mipmap/ic_launcher',
     );
 
     const details = NotificationDetails(android: androidDetails);
@@ -291,7 +291,7 @@ class NotificationService {
       channelDescription: _channelDescription,
       importance: Importance.max,
       priority: Priority.high,
-      icon: '@mipmap/launcher_icon',
+      icon: '@mipmap/ic_launcher',
       styleInformation: BigTextStyleInformation(
         '${transaction.amount.toStringAsFixed(2)} ${transaction.currency} $typeText\n${transaction.details}',
       ),

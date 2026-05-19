@@ -105,7 +105,6 @@ class _OnboardingShellContent extends StatelessWidget {
 
   Widget _buildProgressIndicator(int currentPage) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildStepIndicator(
           step: 1,
@@ -113,21 +112,21 @@ class _OnboardingShellContent extends StatelessWidget {
           isActive: currentPage >= 0,
           isCompleted: currentPage > 0,
         ),
-        _buildProgressLine(isActive: currentPage > 0),
+        Expanded(child: _buildProgressLine(isActive: currentPage > 0)),
         _buildStepIndicator(
           step: 2,
           label: 'العملة',
           isActive: currentPage >= 1,
           isCompleted: currentPage > 1,
         ),
-        _buildProgressLine(isActive: currentPage > 1),
+        Expanded(child: _buildProgressLine(isActive: currentPage > 1)),
         _buildStepIndicator(
           step: 3,
           label: 'إضافية',
           isActive: currentPage >= 2,
           isCompleted: currentPage > 2,
         ),
-        _buildProgressLine(isActive: currentPage > 2),
+        Expanded(child: _buildProgressLine(isActive: currentPage > 2)),
         _buildStepIndicator(
           step: 4,
           label: 'نسخ',
@@ -197,7 +196,6 @@ class _OnboardingShellContent extends StatelessWidget {
 
   Widget _buildProgressLine({required bool isActive}) {
     return Container(
-      width: 60,
       height: 2,
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(

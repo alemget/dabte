@@ -236,285 +236,315 @@ class _BackupSetupPageState extends State<BackupSetupPage>
         opacity: _fadeAnimation,
         child: SlideTransition(
           position: _slideAnimation,
-          child: Column(
-            children: [
-              const Spacer(flex: 2),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.06),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.1),
-                    width: 1.5,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
                   ),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: OnboardingTheme.primary.withOpacity(0.15),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: OnboardingTheme.primary.withOpacity(0.3),
-                          width: 2,
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.cloud_done,
-                        color: OnboardingTheme.primary,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'احمِ بياناتك بالنسخ الاحتياطي',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontFamily: 'Cairo',
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'اربط حساب Google لاستخدام النسخ السحابي التلقائي',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white.withOpacity(0.65),
-                        fontFamily: 'Cairo',
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.12),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.08),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              isLinked ? Icons.verified_user : Icons.login,
-                              color: isLinked
-                                  ? OnboardingTheme.primary
-                                  : Colors.white.withOpacity(0.7),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        // البطاقة الرئيسية
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.06),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.1),
+                              width: 1.5,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  isLinked
-                                      ? 'تم الربط'
-                                      : 'تسجيل الدخول بحساب Google',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                    fontFamily: 'Cairo',
+                          child: Column(
+                            children: [
+                              Container(
+                                width: 52,
+                                height: 52,
+                                decoration: BoxDecoration(
+                                  color: OnboardingTheme.primary.withOpacity(0.15),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: OnboardingTheme.primary.withOpacity(0.3),
+                                    width: 2,
                                   ),
                                 ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  isLinked
-                                      ? (_driveEmail ?? '')
-                                      : 'لرفع نسخة احتياطية إلى Drive',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: Colors.white.withOpacity(0.6),
-                                    fontFamily: 'Cairo',
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          if (isLinked)
-                            TextButton(
-                              onPressed: _isProcessing ? null : _unlink,
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.red.shade300,
-                              ),
-                              child: const Text(
-                                'إلغاء',
-                                style: TextStyle(fontFamily: 'Cairo'),
-                              ),
-                            )
-                          else
-                            ElevatedButton(
-                              onPressed: _isProcessing ? null : _signIn,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: OnboardingTheme.primary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                child: const Icon(
+                                  Icons.cloud_done,
+                                  color: OnboardingTheme.primary,
+                                  size: 26,
                                 ),
                               ),
-                              child: const Text(
-                                'دخول',
+                              const SizedBox(height: 12),
+                              const Text(
+                                'احمِ بياناتك بالنسخ الاحتياطي',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                   fontFamily: 'Cairo',
-                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.12),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.backup,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 10),
-                          const Expanded(
-                            child: Text(
-                              'تفعيل النسخ الاحتياطي التلقائي',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.white,
-                                fontFamily: 'Cairo',
-                                fontWeight: FontWeight.w600,
+                              const SizedBox(height: 6),
+                              Text(
+                                'اربط حساب Google لاستخدام النسخ السحابي التلقائي',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.white.withOpacity(0.65),
+                                  fontFamily: 'Cairo',
+                                  height: 1.4,
+                                ),
                               ),
-                            ),
-                          ),
-                          Switch(
-                            value: _driveAutoBackup,
-                            onChanged: _isProcessing ? null : _toggleAutoBackup,
-                            activeColor: OnboardingTheme.primary,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    _OptionRow(
-                      icon: Icons.schedule,
-                      title: 'التكرار',
-                      subtitle: _driveFrequency,
-                      onTap: (_isProcessing || !_driveAutoBackup)
-                          ? null
-                          : _pickFrequency,
-                    ),
-                    const SizedBox(height: 8),
-                    _OptionRow(
-                      icon: Icons.access_time,
-                      title: 'وقت النسخ',
-                      subtitle:
-                          '${_driveBackupTime.hour.toString().padLeft(2, '0')}:${_driveBackupTime.minute.toString().padLeft(2, '0')}',
-                      onTap:
-                          (_isProcessing || !_driveAutoBackup) ? null : _selectTime,
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(flex: 1),
-              Row(
-                children: [
-                  Expanded(
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: _isProcessing ? null : widget.onSkip,
-                        borderRadius: BorderRadius.circular(18),
-                        child: Ink(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.12),
-                            ),
-                          ),
-                          child: const Text(
-                            'تخطي',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              fontFamily: 'Cairo',
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: _isProcessing ? null : _continue,
-                        borderRadius: BorderRadius.circular(18),
-                        child: Ink(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [OnboardingTheme.primary, Color(0xFF3DB8B0)],
-                            ),
-                            borderRadius: BorderRadius.circular(18),
-                            boxShadow: [
-                              BoxShadow(
-                                color: OnboardingTheme.primary.withOpacity(0.35),
-                                blurRadius: 18,
-                                offset: const Offset(0, 8),
+                              const SizedBox(height: 14),
+                              // تسجيل دخول Google
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.12),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.08),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(
+                                        isLinked ? Icons.verified_user : Icons.login,
+                                        color: isLinked
+                                            ? OnboardingTheme.primary
+                                            : Colors.white.withOpacity(0.7),
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            isLinked
+                                                ? 'تم الربط'
+                                                : 'تسجيل الدخول بحساب Google',
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                              fontFamily: 'Cairo',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 1),
+                                          Text(
+                                            isLinked
+                                                ? (_driveEmail ?? '')
+                                                : 'لرفع نسخة احتياطية إلى Drive',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.white.withOpacity(0.6),
+                                              fontFamily: 'Cairo',
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    if (isLinked)
+                                      TextButton(
+                                        onPressed: _isProcessing ? null : _unlink,
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.red.shade300,
+                                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                                          minimumSize: Size.zero,
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                        child: const Text(
+                                          'إلغاء',
+                                          style: TextStyle(fontFamily: 'Cairo', fontSize: 12),
+                                        ),
+                                      )
+                                    else
+                                      ElevatedButton(
+                                        onPressed: _isProcessing ? null : _signIn,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: OnboardingTheme.primary,
+                                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                          minimumSize: Size.zero,
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'دخول',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'Cairo',
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              // النسخ الاحتياطي التلقائي
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.05),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.12),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.backup,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Expanded(
+                                      child: Text(
+                                        'تفعيل النسخ الاحتياطي التلقائي',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                          fontFamily: 'Cairo',
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    Transform.scale(
+                                      scale: 0.85,
+                                      child: Switch(
+                                        value: _driveAutoBackup,
+                                        onChanged: _isProcessing ? null : _toggleAutoBackup,
+                                        activeColor: OnboardingTheme.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              _OptionRow(
+                                icon: Icons.schedule,
+                                title: 'التكرار',
+                                subtitle: _driveFrequency,
+                                onTap: (_isProcessing || !_driveAutoBackup)
+                                    ? null
+                                    : _pickFrequency,
+                              ),
+                              const SizedBox(height: 6),
+                              _OptionRow(
+                                icon: Icons.access_time,
+                                title: 'وقت النسخ',
+                                subtitle:
+                                    '${_driveBackupTime.hour.toString().padLeft(2, '0')}:${_driveBackupTime.minute.toString().padLeft(2, '0')}',
+                                onTap:
+                                    (_isProcessing || !_driveAutoBackup) ? null : _selectTime,
                               ),
                             ],
                           ),
-                          child: const Text(
-                            'متابعة',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              fontFamily: 'Cairo',
-                            ),
-                          ),
                         ),
-                      ),
+                        const Spacer(),
+                        const SizedBox(height: 12),
+                        // أزرار التحكم
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: _isProcessing ? null : widget.onSkip,
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Ink(
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.08),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.12),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'تخطي',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                        fontFamily: 'Cairo',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: _isProcessing ? null : _continue,
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Ink(
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [OnboardingTheme.primary, Color(0xFF3DB8B0)],
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: OnboardingTheme.primary.withOpacity(0.35),
+                                          blurRadius: 14,
+                                          offset: const Offset(0, 6),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Text(
+                                      'متابعة',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                        fontFamily: 'Cairo',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 24),
-            ],
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -545,7 +575,7 @@ class _OptionRow extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Ink(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.05),
             borderRadius: BorderRadius.circular(16),
